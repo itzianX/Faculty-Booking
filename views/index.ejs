@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#14111f">
+    <title>Faculty Booking System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>Faculty Booking System</h1>
+                <p>Manage faculty events and venue reservations</p>
+            </div>
+            <div class="header-label">BOOKING PORTAL</div>
+        </div>
+    </header>
+
+    <nav>
+        <a href="/" class="active">Dashboard & Booking</a>
+        <a href="/view">Manage Bookings</a>
+    </nav>
+
+    <main class="page-container">
+
+        <section class="welcome-section">
+            <div>
+                <h2>Welcome to the Booking Portal</h2>
+                <p>Submit an event request and manage your faculty bookings.</p>
+            </div>
+            <div class="welcome-icon">FB</div>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Bookings</span>
+                <strong><%= stats.total %></strong>
+                <span class="stat-description">All event requests</span>
+            </div>
+
+            <div class="stat-card pending-card">
+                <span class="stat-label">Pending</span>
+                <strong><%= stats.pending %></strong>
+                <span class="stat-description">Awaiting review</span>
+            </div>
+
+            <div class="stat-card approved-card">
+                <span class="stat-label">Approved</span>
+                <strong><%= stats.approved %></strong>
+                <span class="stat-description">Confirmed bookings</span>
+            </div>
+
+            <div class="stat-card rejected-card">
+                <span class="stat-label">Rejected</span>
+                <strong><%= stats.rejected %></strong>
+                <span class="stat-description">Not approved</span>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-heading">
+                <div>
+                    <h2>New Event Booking</h2>
+                    <p>Complete the information below to request a reservation.</p>
+                </div>
+                <span class="required-note">* Required fields</span>
+            </div>
+
+            <form action="/register" method="POST">
+
+                <h3 class="form-section-title">Event Information</h3>
+
+                <label for="event_title">Event Title *</label>
+                <input
+                    type="text"
+                    id="event_title"
+                    name="event_title"
+                    maxlength="150"
+                    placeholder="Enter the name of your event"
+                    required
+                >
+
+                <div class="form-row">
+                    <div>
+                        <label for="event_type">Event Type *</label>
+                        <select id="event_type" name="event_type" required>
+                            <option value="">Select event type</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Seminar">Seminar</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Conference">Conference</option>
+                            <option value="Training">Training</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="department">Department *</label>
+                        <input
+                            type="text"
+                            id="department"
+                            name="department"
+                            maxlength="100"
+                            placeholder="Your department"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <label for="event_description">Event Description</label>
+                <textarea
+                    id="event_description"
+                    name="event_description"
+                    rows="3"
+                    placeholder="Describe the purpose of your event"
+                ></textarea>
+
+                <h3 class="form-section-title">Date, Time and Venue</h3>
+
+                <div class="form-row">
+                    <div>
+                        <label for="event_date">Event Date *</label>
+                        <input
+                            type="date"
+                            id="event_date"
+                            name="event_date"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="expected_attendees">Expected Attendees *</label>
+                        <input
+                            type="number"
+                            id="expected_attendees"
+                            name="expected_attendees"
+                            min="1"
+                            placeholder="Number of attendees"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row compact">
+                    <div>
+                        <label for="start_time">Start Time *</label>
+                        <input
+                            type="time"
+                            id="start_time"
+                            name="start_time"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="end_time">End Time *</label>
+                        <input
+                            type="time"
+                            id="end_time"
+                            name="end_time"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <label for="venue">Venue / Room *</label>
+                <input
+                    type="text"
+                    id="venue"
+                    name="venue"
+                    maxlength="150"
+                    placeholder="Enter building or room name"
+                    required
+                >
+
+                <h3 class="form-section-title">Organizer Information</h3>
+
+                <div class="form-row">
+                    <div>
+                        <label for="organizer_name">Organizer Name *</label>
+                        <input
+                            type="text"
+                            id="organizer_name"
+                            name="organizer_name"
+                            maxlength="150"
+                            placeholder="Full name"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="contact_email">Contact Email *</label>
+                        <input
+                            type="email"
+                            id="contact_email"
+                            name="contact_email"
+                            maxlength="150"
+                            placeholder="name@example.com"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <label for="faculty_member">Faculty Member Requested</label>
+                <input
+                    type="text"
+                    id="faculty_member"
+                    name="faculty_member"
+                    maxlength="150"
+                    placeholder="Enter faculty member's name, if applicable"
+                >
+
+                <label for="special_requests">Additional Notes or Requests</label>
+                <textarea
+                    id="special_requests"
+                    name="special_requests"
+                    rows="3"
+                    placeholder="Any other information about your booking"
+                ></textarea>
+
+                <div class="form-note">
+                    Your booking will be submitted with a Pending status until it is reviewed.
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Submit Booking Request
+                </button>
+
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Faculty Booking System &copy; 2026</p>
+        <p>Organized bookings for faculty events</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#14111f">
+    <title>Manage Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>Faculty Booking System</h1>
+                <p>Review and manage event reservations</p>
+            </div>
+            <div class="header-label">ADMINISTRATION</div>
+        </div>
+    </header>
+
+    <nav>
+        <a href="/">Dashboard & Booking</a>
+        <a href="/view" class="active">Manage Bookings</a>
+    </nav>
+
+    <main class="page-container">
+
+        <section class="welcome-section">
+            <div>
+                <h2>Booking Management</h2>
+                <p>Review booking requests and manage their current status.</p>
+            </div>
+            <a href="/" class="secondary-button">+ New Booking</a>
+        </section>
+
+        <section class="container wide">
+            <div class="section-heading">
+                <div>
+                    <h2>All Bookings</h2>
+                    <p>View registered event and venue reservations below.</p>
+                </div>
+                <span class="booking-count">
+                    <%= bookings.length %> booking(s)
+                </span>
+            </div>
+
+            <% if (bookings.length === 0) { %>
+
+                <div class="empty">
+                    <h3>No Bookings Yet</h3>
+                    <p>There are no registered event bookings.</p>
+                    <a href="/" class="secondary-button">Create First Booking</a>
+                </div>
+
+            <% } else { %>
+
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="bookingSearch"
+                        placeholder="Search event, venue, department, or organizer..."
+                        aria-label="Search bookings"
+                    >
+                </div>
+
+                <div class="table-container">
+                    <table id="bookingTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Event Details</th>
+                                <th>Date & Time</th>
+                                <th>Venue</th>
+                                <th>Organizer</th>
+                                <th>Attendees</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% bookings.forEach((booking) => { %>
+                                <tr>
+                                    <td data-label="ID">#<%= booking.booking_id %></td>
+
+                                    <td data-label="Event">
+                                        <strong><%= booking.event_title %></strong>
+                                        <span class="table-subtext">
+                                            <%= booking.event_type %>
+                                        </span>
+                                        <span class="table-subtext">
+                                            <%= booking.department %>
+                                        </span>
+
+                                        <% if (booking.event_description) { %>
+                                            <details class="booking-details">
+                                                <summary>Description</summary>
+                                                <p><%= booking.event_description %></p>
+                                            </details>
+                                        <% } %>
+
+                                        <% if (booking.special_requests) { %>
+                                            <details class="booking-details">
+                                                <summary>Additional notes</summary>
+                                                <p><%= booking.special_requests %></p>
+                                            </details>
+                                        <% } %>
+                                    </td>
+
+                                    <td data-label="Date &amp; Time">
+                                        <strong><%= booking.event_date %></strong>
+                                        <span class="table-subtext">
+                                            <%= booking.start_time %> -
+                                            <%= booking.end_time %>
+                                        </span>
+                                    </td>
+
+                                    <td data-label="Venue"><%= booking.venue %></td>
+
+                                    <td data-label="Organizer">
+                                        <strong><%= booking.organizer_name %></strong>
+                                        <span class="table-subtext">
+                                            <%= booking.contact_email %>
+                                        </span>
+
+                                        <% if (booking.faculty_member) { %>
+                                            <span class="table-subtext">
+                                                Faculty: <%= booking.faculty_member %>
+                                            </span>
+                                        <% } %>
+                                    </td>
+
+                                    <td data-label="Attendees"><%= booking.expected_attendees %></td>
+
+                                    <td data-label="Status">
+                                        <span class="status-badge status-<%= booking.booking_status.toLowerCase() %>">
+                                            <%= booking.booking_status %>
+                                        </span>
+                                    </td>
+
+                                    <td data-label="Actions">
+                                        <div class="action-group">
+                                            <form
+                                                action="/status/<%= booking.booking_id %>"
+                                                method="POST"
+                                                class="status-form"
+                                            >
+                                                <label class="visually-hidden"
+                                                    for="status-<%= booking.booking_id %>">
+                                                    Booking status
+                                                </label>
+
+                                                <select
+                                                    id="status-<%= booking.booking_id %>"
+                                                    name="booking_status"
+                                                    class="status-select"
+                                                    required
+                                                >
+                                                    <option value="Pending"
+                                                        <%= booking.booking_status === 'Pending' ? 'selected' : '' %>>
+                                                        Pending
+                                                    </option>
+
+                                                    <option value="Approved"
+                                                        <%= booking.booking_status === 'Approved' ? 'selected' : '' %>>
+                                                        Approved
+                                                    </option>
+
+                                                    <option value="Rejected"
+                                                        <%= booking.booking_status === 'Rejected' ? 'selected' : '' %>>
+                                                        Rejected
+                                                    </option>
+
+                                                    <option value="Cancelled"
+                                                        <%= booking.booking_status === 'Cancelled' ? 'selected' : '' %>>
+                                                        Cancelled
+                                                    </option>
+                                                </select>
+
+                                                <button type="submit" class="small-button">
+                                                    Update
+                                                </button>
+                                            </form>
+
+                                            <form
+                                                action="/delete/<%= booking.booking_id %>"
+                                                method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this booking?');"
+                                            >
+                                                <button type="submit" class="delete-button">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="noSearchResults" class="empty hidden">
+                    No bookings match your search.
+                </p>
+
+                <script>
+                    const searchInput = document.getElementById('bookingSearch');
+                    const bookingRows = document.querySelectorAll('#bookingTable tbody tr');
+                    const noResults = document.getElementById('noSearchResults');
+
+                    searchInput.addEventListener('input', () => {
+                        const searchText = searchInput.value.toLowerCase();
+                        let visibleCount = 0;
+
+                        bookingRows.forEach((row) => {
+                            const matches = row.textContent
+                                .toLowerCase()
+                                .includes(searchText);
+
+                            row.style.display = matches ? '' : 'none';
+
+                            if (matches) {
+                                visibleCount++;
+                            }
+                        });
+
+                        noResults.classList.toggle('hidden', visibleCount > 0);
+                    });
+                </script>
+
+            <% } %>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Faculty Booking System &copy; 2026</p>
+        <p>Organized bookings for faculty events</p>
+    </footer>
+
+</body>
+</html>
