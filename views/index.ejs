@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,7 @@
     <title>Faculty Booking System</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
 
     <header>
@@ -21,8 +22,17 @@
     </header>
 
     <nav>
-        <a href="/" class="active">Dashboard & Booking</a>
-        <a href="/view">Manage Bookings</a>
+        <a href="/">Home</a>
+        <% if (currentUser) { %>
+            <% if (currentUser.role==='admin' ) { %><a href="/admin">Manage Bookings</a>
+                <% } else { %><a href="/user">My Bookings</a>
+                    <% } %>
+                        <a href="/book" class="active">New Booking</a>
+                        <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button>
+                        </form>
+                        <% } else { %>
+                            <a href="/login">Sign In</a><a href="/signup">Create Account</a>
+                            <% } %>
     </nav>
 
     <main class="page-container">
@@ -30,7 +40,7 @@
         <section class="welcome-section">
             <div>
                 <h2>Welcome to the Booking Portal</h2>
-                <p>Submit an event request and manage your faculty bookings.</p>
+                <p>Submit event requests and follow each booking decision.</p>
             </div>
             <div class="welcome-icon">FB</div>
         </section>
@@ -38,200 +48,237 @@
         <section class="stats-grid">
             <div class="stat-card">
                 <span class="stat-label">Total Bookings</span>
-                <strong><%= stats.total %></strong>
+                <strong>
+                    <%= stats.total %>
+                </strong>
                 <span class="stat-description">All event requests</span>
             </div>
 
             <div class="stat-card pending-card">
                 <span class="stat-label">Pending</span>
-                <strong><%= stats.pending %></strong>
+                <strong>
+                    <%= stats.pending %>
+                </strong>
                 <span class="stat-description">Awaiting review</span>
             </div>
 
             <div class="stat-card approved-card">
                 <span class="stat-label">Approved</span>
-                <strong><%= stats.approved %></strong>
+                <strong>
+                    <%= stats.approved %>
+                </strong>
                 <span class="stat-description">Confirmed bookings</span>
             </div>
 
             <div class="stat-card rejected-card">
                 <span class="stat-label">Rejected</span>
-                <strong><%= stats.rejected %></strong>
+                <strong>
+                    <%= stats.rejected %>
+                </strong>
                 <span class="stat-description">Not approved</span>
             </div>
         </section>
 
-        <section class="container">
-            <div class="section-heading">
-                <div>
-                    <h2>New Event Booking</h2>
-                    <p>Complete the information below to request a reservation.</p>
-                </div>
-                <span class="required-note">* Required fields</span>
-            </div>
-
-            <form action="/register" method="POST">
-
-                <h3 class="form-section-title">Event Information</h3>
-
-                <label for="event_title">Event Title *</label>
-                <input
-                    type="text"
-                    id="event_title"
-                    name="event_title"
-                    maxlength="150"
-                    placeholder="Enter the name of your event"
-                    required
-                >
-
-                <div class="form-row">
+        <% if (currentUser) { %>
+            <section class="container">
+                <div class="section-heading">
                     <div>
-                        <label for="event_type">Event Type *</label>
-                        <select id="event_type" name="event_type" required>
-                            <option value="">Select event type</option>
-                            <option value="Meeting">Meeting</option>
-                            <option value="Seminar">Seminar</option>
-                            <option value="Workshop">Workshop</option>
-                            <option value="Conference">Conference</option>
-                            <option value="Training">Training</option>
-                            <option value="Other">Other</option>
-                        </select>
+                        <h2>New Event Booking</h2>
+                        <p>Complete the information below to request a reservation.</p>
                     </div>
-
-                    <div>
-                        <label for="department">Department *</label>
-                        <input
-                            type="text"
-                            id="department"
-                            name="department"
-                            maxlength="100"
-                            placeholder="Your department"
-                            required
-                        >
-                    </div>
+                    <span class="required-note">* Required fields</span>
                 </div>
 
-                <label for="event_description">Event Description</label>
-                <textarea
-                    id="event_description"
-                    name="event_description"
-                    rows="3"
-                    placeholder="Describe the purpose of your event"
-                ></textarea>
+                <form action="/register" method="POST">
 
-                <h3 class="form-section-title">Date, Time and Venue</h3>
+                    <h3 class="form-section-title">Event Information</h3>
 
-                <div class="form-row">
-                    <div>
-                        <label for="event_date">Event Date *</label>
-                        <input
-                            type="date"
-                            id="event_date"
-                            name="event_date"
-                            required
-                        >
+                    <label for="event_title">Event Title *</label>
+                    <input type="text" id="event_title" name="event_title" maxlength="150"
+                        placeholder="Enter the name of your event" required>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="event_type">Event Type *</label>
+                            <select id="event_type" name="event_type" required>
+                                <option value="">Select event type</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="Seminar">Seminar</option>
+                                <option value="Workshop">Workshop</option>
+                                <option value="Conference">Conference</option>
+                                <option value="Training">Training</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="department">Department *</label>
+                            <input type="text" id="department" name="department" maxlength="100"
+                                placeholder="Your department" required>
+                        </div>
                     </div>
 
-                    <div>
-                        <label for="expected_attendees">Expected Attendees *</label>
-                        <input
-                            type="number"
-                            id="expected_attendees"
-                            name="expected_attendees"
-                            min="1"
-                            placeholder="Number of attendees"
-                            required
-                        >
-                    </div>
-                </div>
-
-                <div class="form-row compact">
-                    <div>
-                        <label for="start_time">Start Time *</label>
-                        <input
-                            type="time"
-                            id="start_time"
-                            name="start_time"
-                            required
-                        >
+                    <div id="other-event-type-field" class="other-event-type-field" hidden>
+                        <label for="other_event_type">Please specify the event type *</label>
+                        <input type="text" id="other_event_type" name="other_event_type" maxlength="80"
+                            placeholder="For example: Fundraising event">
                     </div>
 
-                    <div>
-                        <label for="end_time">End Time *</label>
-                        <input
-                            type="time"
-                            id="end_time"
-                            name="end_time"
-                            required
-                        >
+                    <label for="event_description">Event Description</label>
+                    <textarea id="event_description" name="event_description" rows="3"
+                        placeholder="Describe the purpose of your event"></textarea>
+
+                    <h3 class="form-section-title">Date, Time and Venue</h3>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="event_date_trigger">Event Date *</label>
+                            <div class="custom-date-control">
+                                <input class="picker-native-value" type="date" id="event_date" name="event_date"
+                                    aria-label="Event date">
+                                <button id="event_date_trigger" type="button"
+                                    class="custom-picker-trigger date-picker-trigger" aria-label="Choose event date"
+                                    aria-haspopup="dialog" aria-expanded="false">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="3" y="5" width="18" height="16" rx="2" />
+                                        <path d="M16 3v4M8 3v4M3 10h18" />
+                                    </svg>
+                                    <span class="date-picker-value">Choose a date</span>
+                                </button>
+                                <div class="custom-picker-popover date-picker-popover" role="dialog"
+                                    aria-label="Choose event date" hidden>
+                                    <div class="picker-popover-heading"><button type="button"
+                                            class="calendar-month-step" data-month-step="-1"
+                                            aria-label="Previous month">‹</button><strong
+                                            class="calendar-month-title"></strong><button type="button"
+                                            class="calendar-month-step" data-month-step="1"
+                                            aria-label="Next month">›</button></div>
+                                    <div class="calendar-weekdays" aria-hidden="true">
+                                        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                                    </div>
+                                    <div class="calendar-days" role="grid"></div>
+                                </div>
+                                <span class="picker-error" hidden>Please choose an event date.</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="expected_attendees">Expected Attendees *</label>
+                            <input type="number" id="expected_attendees" name="expected_attendees" min="1"
+                                placeholder="Number of attendees" required>
+                        </div>
                     </div>
-                </div>
 
-                <label for="venue">Venue / Room *</label>
-                <input
-                    type="text"
-                    id="venue"
-                    name="venue"
-                    maxlength="150"
-                    placeholder="Enter building or room name"
-                    required
-                >
+                    <div class="form-row compact">
+                        <div>
+                            <label for="start_time_trigger">Start Time *</label>
+                            <div class="custom-time-control" data-time-picker>
+                                <input class="picker-native-value" type="time" id="start_time" name="start_time"
+                                    aria-label="Start time">
+                                <button id="start_time_trigger" type="button"
+                                    class="custom-picker-trigger time-picker-trigger" aria-label="Choose start time"
+                                    aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <circle cx="12" cy="12" r="9" />
+                                        <path d="M12 7v5l3 2" />
+                                    </svg><span class="time-picker-value">Choose a time</span></button>
+                                <div class="custom-picker-popover time-picker-popover" role="dialog"
+                                    aria-label="Choose start time" hidden>
+                                    <div class="time-picker-columns">
+                                        <section class="time-column">
+                                            <h4>Hour</h4>
+                                            <div class="time-options time-hour-options"></div>
+                                        </section>
+                                        <section class="time-column">
+                                            <h4>Minute</h4>
+                                            <div class="time-options time-minute-options"></div>
+                                        </section>
+                                    </div>
+                                    <button type="button" class="time-picker-apply">Use this time</button>
+                                </div>
+                                <span class="picker-error" hidden>Please choose a start time.</span>
+                            </div>
+                        </div>
 
-                <h3 class="form-section-title">Organizer Information</h3>
-
-                <div class="form-row">
-                    <div>
-                        <label for="organizer_name">Organizer Name *</label>
-                        <input
-                            type="text"
-                            id="organizer_name"
-                            name="organizer_name"
-                            maxlength="150"
-                            placeholder="Full name"
-                            required
-                        >
+                        <div>
+                            <label for="end_time_trigger">End Time *</label>
+                            <div class="custom-time-control" data-time-picker>
+                                <input class="picker-native-value" type="time" id="end_time" name="end_time"
+                                    aria-label="End time">
+                                <button id="end_time_trigger" type="button"
+                                    class="custom-picker-trigger time-picker-trigger" aria-label="Choose end time"
+                                    aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <circle cx="12" cy="12" r="9" />
+                                        <path d="M12 7v5l3 2" />
+                                    </svg><span class="time-picker-value">Choose a time</span></button>
+                                <div class="custom-picker-popover time-picker-popover" role="dialog"
+                                    aria-label="Choose end time" hidden>
+                                    <div class="time-picker-columns">
+                                        <section class="time-column">
+                                            <h4>Hour</h4>
+                                            <div class="time-options time-hour-options"></div>
+                                        </section>
+                                        <section class="time-column">
+                                            <h4>Minute</h4>
+                                            <div class="time-options time-minute-options"></div>
+                                        </section>
+                                    </div>
+                                    <button type="button" class="time-picker-apply">Use this time</button>
+                                </div>
+                                <span class="picker-error" hidden>Please choose an end time.</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label for="contact_email">Contact Email *</label>
-                        <input
-                            type="email"
-                            id="contact_email"
-                            name="contact_email"
-                            maxlength="150"
-                            placeholder="name@example.com"
-                            required
-                        >
+                    <label for="venue">Venue / Room *</label>
+                    <input type="text" id="venue" name="venue" maxlength="150" placeholder="Enter building or room name"
+                        required>
+
+                    <h3 class="form-section-title">Organizer Information</h3>
+
+                    <div class="form-row">
+                        <div>
+                            <label>Organizer Name</label>
+                            <input type="text" value="<%= currentUser.full_name %>" disabled>
+                        </div>
+
+                        <div>
+                            <label for="contact_email">Contact Email *</label>
+                            <input type="email" value="<%= currentUser.email %>" disabled>
+                        </div>
                     </div>
-                </div>
 
-                <label for="faculty_member">Faculty Member Requested</label>
-                <input
-                    type="text"
-                    id="faculty_member"
-                    name="faculty_member"
-                    maxlength="150"
-                    placeholder="Enter faculty member's name, if applicable"
-                >
+                    <label for="faculty_member">Faculty Member Requested</label>
+                    <input type="text" id="faculty_member" name="faculty_member" maxlength="150"
+                        placeholder="Enter faculty member's name, if applicable">
 
-                <label for="special_requests">Additional Notes or Requests</label>
-                <textarea
-                    id="special_requests"
-                    name="special_requests"
-                    rows="3"
-                    placeholder="Any other information about your booking"
-                ></textarea>
+                    <label for="special_requests">Additional Notes or Requests</label>
+                    <textarea id="special_requests" name="special_requests" rows="3"
+                        placeholder="Any other information about your booking"></textarea>
 
-                <div class="form-note">
-                    Your booking will be submitted with a Pending status until it is reviewed.
-                </div>
+                    <div class="form-note">
+                        Your booking will be submitted with a Pending status until it is reviewed.
+                    </div>
 
-                <button type="submit" class="submit-button">
-                    Submit Booking Request
-                </button>
+                    <button type="submit" class="submit-button">
+                        Submit Booking Request
+                    </button>
 
-            </form>
-        </section>
+                </form>
+            </section>
+            <% } else { %>
+                <section class="container auth-prompt">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Sign in to make a booking</h2>
+                            <p>Create an account to submit requests and track confirmation or decline decisions.</p>
+                        </div>
+                    </div>
+                    <a href="/login" class="submit-button prompt-button">Sign In</a>
+                    <a href="/signup" class="secondary-button">Create Account</a>
+                </section>
+                <% } %>
 
     </main>
 
@@ -240,5 +287,187 @@
         <p>Organized bookings for faculty events</p>
     </footer>
 
+    <script>
+        const bookingForm = document.querySelector('form[action="/register"]');
+        const closePickers = () => {
+            document.querySelectorAll('.custom-picker-popover').forEach((popover) => { popover.hidden = true; });
+            document.querySelectorAll('.custom-picker-trigger').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+        };
+        const padNumber = (value) => String(value).padStart(2, '0');
+
+        document.querySelectorAll('.custom-date-control').forEach((control) => {
+            const input = control.querySelector('input[type="date"]');
+            const trigger = control.querySelector('.date-picker-trigger');
+            const display = control.querySelector('.date-picker-value');
+            const popover = control.querySelector('.date-picker-popover');
+            const monthTitle = control.querySelector('.calendar-month-title');
+            const daysGrid = control.querySelector('.calendar-days');
+            const error = control.querySelector('.picker-error');
+            const parseDate = (value) => value ? new Date(Number(value.slice(0, 4)), Number(value.slice(5, 7)) - 1, Number(value.slice(8, 10))) : null;
+            let visibleMonth = parseDate(input.value) || new Date();
+
+            const updateDisplay = () => {
+                const date = parseDate(input.value);
+                display.textContent = date ? date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Choose a date';
+            };
+            const renderCalendar = () => {
+                const year = visibleMonth.getFullYear();
+                const month = visibleMonth.getMonth();
+                monthTitle.textContent = visibleMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                daysGrid.replaceChildren();
+                const offset = (new Date(year, month, 1).getDay() + 6) % 7;
+                for (let blank = 0; blank < offset; blank++) {
+                    const spacer = document.createElement('span');
+                    spacer.className = 'calendar-day-spacer';
+                    daysGrid.append(spacer);
+                }
+                const count = new Date(year, month + 1, 0).getDate();
+                const selected = input.value;
+                const today = new Date();
+                for (let day = 1; day <= count; day++) {
+                    const value = `${year}-${padNumber(month + 1)}-${padNumber(day)}`;
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'calendar-day';
+                    button.textContent = day;
+                    button.setAttribute('role', 'gridcell');
+                    button.setAttribute('aria-label', new Date(year, month, day).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }));
+                    if (value === selected) button.classList.add('selected');
+                    if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) button.classList.add('today');
+                    button.addEventListener('click', () => {
+                        input.value = value;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                        error.hidden = true;
+                        trigger.removeAttribute('aria-invalid');
+                        updateDisplay();
+                        closePickers();
+                    });
+                    daysGrid.append(button);
+                }
+            };
+            control.querySelectorAll('[data-month-step]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + Number(button.dataset.monthStep), 1);
+                    renderCalendar();
+                });
+            });
+            trigger.addEventListener('click', () => {
+                const opening = popover.hidden;
+                closePickers();
+                if (opening) {
+                    const selectedDate = parseDate(input.value);
+                    visibleMonth = selectedDate || new Date();
+                    visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+                    renderCalendar();
+                    popover.hidden = false;
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+            updateDisplay();
+        });
+
+        document.querySelectorAll('.custom-time-control').forEach((control) => {
+            const input = control.querySelector('input[type="time"]');
+            const trigger = control.querySelector('.time-picker-trigger');
+            const display = control.querySelector('.time-picker-value');
+            const popover = control.querySelector('.time-picker-popover');
+            const hourList = control.querySelector('.time-hour-options');
+            const minuteList = control.querySelector('.time-minute-options');
+            const error = control.querySelector('.picker-error');
+            let selectedHour = null;
+            let selectedMinute = null;
+
+            const updateDisplay = () => { display.textContent = input.value || 'Choose a time'; };
+            const selectValue = (list, value) => {
+                list.querySelectorAll('button').forEach((button) => {
+                    const selected = button.dataset.value === value;
+                    button.classList.toggle('selected', selected);
+                    button.setAttribute('aria-pressed', String(selected));
+                });
+                list.dataset.selectedValue = value;
+            };
+            const addOptions = (list, count) => {
+                for (let number = 0; number < count; number++) {
+                    const value = padNumber(number);
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'time-option';
+                    button.textContent = value;
+                    button.dataset.value = value;
+                    button.setAttribute('aria-pressed', 'false');
+                    button.addEventListener('click', () => selectValue(list, value));
+                    list.append(button);
+                }
+            };
+            addOptions(hourList, 24);
+            addOptions(minuteList, 60);
+            trigger.addEventListener('click', () => {
+                const opening = popover.hidden;
+                closePickers();
+                if (opening) {
+                    const current = input.value || '09:00';
+                    selectValue(hourList, current.slice(0, 2));
+                    selectValue(minuteList, current.slice(3, 5));
+                    popover.hidden = false;
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+            control.querySelector('.time-picker-apply').addEventListener('click', () => {
+                const hour = hourList.dataset.selectedValue;
+                const minute = minuteList.dataset.selectedValue;
+                if (!hour || !minute) return;
+                input.value = `${hour}:${minute}`;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                error.hidden = true;
+                trigger.removeAttribute('aria-invalid');
+                updateDisplay();
+                closePickers();
+            });
+            updateDisplay();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.custom-date-control, .custom-time-control')) closePickers();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closePickers();
+        });
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', (event) => {
+                for (const control of document.querySelectorAll('.custom-date-control, .custom-time-control')) {
+                    const input = control.querySelector('.picker-native-value');
+                    if (!input.value) {
+                        event.preventDefault();
+                        const trigger = control.querySelector('.custom-picker-trigger');
+                        const error = control.querySelector('.picker-error');
+                        error.hidden = false;
+                        trigger.setAttribute('aria-invalid', 'true');
+                        closePickers();
+                        control.querySelector('.custom-picker-popover').hidden = false;
+                        trigger.setAttribute('aria-expanded', 'true');
+                        trigger.focus();
+                        return;
+                    }
+                }
+            });
+        }
+        document.documentElement.classList.add('custom-picker-ready');
+
+        const eventTypeSelect = document.getElementById('event_type');
+        const otherEventField = document.getElementById('other-event-type-field');
+        const otherEventInput = document.getElementById('other_event_type');
+        if (eventTypeSelect && otherEventField && otherEventInput) {
+            const updateOtherEventField = () => {
+                const isOther = eventTypeSelect.value === 'Other';
+                otherEventField.hidden = !isOther;
+                otherEventInput.required = isOther;
+                if (!isOther) otherEventInput.value = '';
+            };
+            eventTypeSelect.addEventListener('change', updateOtherEventField);
+            updateOtherEventField();
+        }
+    </script>
+
 </body>
+
 </html>

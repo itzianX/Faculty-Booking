@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#342052">
+    <title>Faculty Booking System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>Faculty Booking System</h1>
+                <p>A simpler way to request and manage event spaces</p>
+            </div>
+            <div class="header-label">BOOKING WORKSPACE</div>
+        </div>
+    </header>
+    <nav>
+        <a href="/" class="active">Home</a>
+        <% if (currentUser) { %>
+            <% if (currentUser.role==='admin' ) { %><a href="/admin">Manage Bookings</a>
+                <% } else { %><a href="/user">My Bookings</a>
+                    <% } %>
+                        <a href="/book">New Booking</a>
+                        <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button>
+                        </form>
+                        <% } else { %>
+                            <a href="/login">Sign In</a><a href="/signup">Create Account</a>
+                            <% } %>
+    </nav>
+    <main class="page-container homepage homepage-simple">
+        <section class="simple-hero">
+            <span class="simple-eyebrow">FACULTY EVENT BOOKINGS</span>
+            <h2>Book a space for<br><span>what brings us together.</span></h2>
+            <p>Request a room for your faculty event and follow the decision from your account.</p>
+            <div class="simple-home-actions">
+                <% if (currentUser && currentUser.role==='admin' ) { %>
+                    <a class="simple-primary" href="/admin">Review Bookings</a>
+                    <a class="simple-secondary" href="/book">Request a Space</a>
+                    <% } else if (currentUser) { %>
+                        <a class="simple-primary" href="/book">Request a Space</a>
+                        <a class="simple-secondary" href="/user">My Bookings</a>
+                        <% } else { %>
+                            <a class="simple-primary" href="/signup">Get Started</a>
+                            <a class="simple-secondary" href="/login">Sign In</a>
+                            <% } %>
+            </div>
+            <% if (!currentUser && adminSetupAvailable) { %>
+                <p class="simple-admin-link"><a href="/setup-admin">Set up the first administrator</a></p>
+                <% } %>
+                    <div class="simple-decoration decoration-one"></div>
+                    <div class="simple-decoration decoration-two"></div>
+        </section>
+
+        <section class="simple-steps-section">
+            <div class="simple-section-title"><span>THREE SIMPLE STEPS</span>
+                <h2>From request to decision</h2>
+            </div>
+            <div class="simple-steps">
+                <article><span>01</span>
+                    <div>
+                        <h3>Request</h3>
+                        <p>Choose your event details and submit a booking.</p>
+                    </div>
+                </article>
+                <article><span>02</span>
+                    <div>
+                        <h3>Review</h3>
+                        <p>An admin checks the request and venue availability.</p>
+                    </div>
+                </article>
+                <article><span>03</span>
+                    <div>
+                        <h3>Track</h3>
+                        <p>See confirmation or decline in your booking history.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>Faculty Booking System &copy; 2026</p>
+        <p>Organized bookings for faculty events</p>
+    </footer>
+</body>
+
+</html>
