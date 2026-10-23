@@ -4,22 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#14111f">
+    <meta name="theme-color" content="#0c0e17">
     <title>
         <%= mode==='signup' ? 'Create Account' : mode==='setup-admin' ? 'Set Up Administrator' : mode==='login'
-            ? 'Sign In' : 'Account' %> | Faculty Booking
+            ? 'Sign In' : 'Account' %> | Anubis Core Registry
     </title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body>
+<body data-theme="amethyst">
     <header>
         <div class="header-content">
             <div>
-                <h1>Faculty Booking System</h1>
+                <span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span>
+                <h1>Anubis Core Registry</h1>
                 <p>Sign in to manage your faculty bookings</p>
             </div>
             <div class="header-label">ACCOUNT</div>
+            <%- include('sidebar-toggle-button') %>
         </div>
     </header>
     <nav><a href="/">Home</a><a href="/login" class="<%= mode === 'login' ? 'active' : '' %>">Sign In</a><a
@@ -109,8 +111,9 @@
                             </div>
                             <form action="/login" method="POST">
                                 <input type="hidden" id="login_type" name="login_type" value="user">
-                                <label for="email">Email</label><input id="email" name="email" type="email"
-                                    autocomplete="username" required>
+                                <label id="login-identifier-label" for="login-identifier">Email</label><input id="login-identifier" name="identifier" type="text"
+                                    autocomplete="username" placeholder="Enter your email" required>
+                                <p class="form-note" id="admin-test-hint" hidden>Testing account: username <strong>admin</strong>, password <strong>admin123</strong>.</p>
                                 <label for="password">Password</label>
                                 <div class="password-field"><input id="password" name="password" type="password"
                                         autocomplete="current-password" required><button class="password-toggle"
@@ -130,7 +133,7 @@
         </section>
     </main>
     <footer>
-        <p>Faculty Booking System &copy; 2026</p>
+        <p>Anubis Core Registry &copy; 2026</p>
         <p>Organized bookings for faculty events</p>
     </footer>
     <script>
@@ -148,6 +151,9 @@
         if (loginType) {
             const options = document.querySelectorAll('.login-option');
             const submit = document.getElementById('login-submit');
+            const identifierLabel = document.getElementById('login-identifier-label');
+            const identifierInput = document.getElementById('login-identifier');
+            const adminHint = document.getElementById('admin-test-hint');
             options.forEach((option) => {
                 option.addEventListener('click', () => {
                     loginType.value = option.dataset.loginType;
@@ -156,11 +162,16 @@
                         item.classList.toggle('selected', selected);
                         item.setAttribute('aria-pressed', String(selected));
                     });
-                    submit.textContent = option.dataset.loginType === 'admin' ? 'Sign In as Admin' : 'Sign In as User';
+                    const isAdmin = option.dataset.loginType === 'admin';
+                    submit.textContent = isAdmin ? 'Sign In as Admin' : 'Sign In as User';
+                    identifierLabel.textContent = isAdmin ? 'Username or email' : 'Email';
+                    identifierInput.placeholder = isAdmin ? 'Enter admin' : 'Enter your email';
+                    adminHint.hidden = !isAdmin;
                 });
             });
         }
     </script>
+    <script src="/js/sidebar-toggle.js" defer></script>
 </body>
 
 </html>

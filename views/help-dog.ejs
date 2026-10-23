@@ -1,0 +1,101 @@
+<aside class="booking-buddy" aria-label="Anubis booking guide">
+    <section class="buddy-panel" id="buddy-panel" hidden aria-labelledby="buddy-title">
+        <header class="buddy-header">
+            <span class="buddy-avatar" aria-hidden="true">
+                <svg viewBox="0 0 48 48" role="img">
+                    <path class="buddy-anubis-ear" d="M13 19 8 3c7 2 12 6 15 13zm22 0 5-16c-7 2-12 6-15 13z" />
+                    <path class="buddy-anubis-ear-inner" d="m13 13-2-6 8 7zm22 0 2-6-8 7z" />
+                    <path class="buddy-anubis-head" d="M13 15q11-7 22 0l-2 13 5 5-14 11-14-11 5-5z" />
+                    <path class="buddy-anubis-muzzle" d="m17 26 7-3 7 3-1 7-6 5-6-5z" />
+                    <path class="buddy-anubis-eye" d="m15 20 6-2-1 3-5 1zm18 0-6-2 1 3 5 1z" />
+                    <path class="buddy-anubis-nose" d="m21 31 3-2 3 2-3 3z" />
+                    <path class="buddy-anubis-mouth" d="M24 34v3m0-1-4 2m4-2 4 2" />
+                    <path class="buddy-anubis-collar" d="M12 36q12 8 24 0l3 6q-15 8-30 0z" />
+                    <path class="buddy-anubis-collar-line" d="M14 40q10 5 20 0" />
+                </svg>
+            </span>
+            <div class="buddy-title-wrap"><strong id="buddy-title">Anubis</strong><small>Quick answers for your
+                    bookings</small></div>
+            <button type="button" id="buddy-close" class="buddy-close" aria-label="Close help">×</button>
+        </header>
+        <div class="buddy-chat" id="buddy-chat" aria-live="polite">
+            <div class="buddy-bubble buddy-answer">Hi! Pick a question and I’ll help you find your way around.</div>
+        </div>
+        <div class="buddy-questions" id="buddy-questions" aria-label="Frequently asked questions"></div>
+        <p class="buddy-note">I’m a quick help guide. An administrator makes booking decisions.</p>
+    </section>
+    <button type="button" class="buddy-launcher" id="buddy-launcher" aria-controls="buddy-panel" aria-expanded="false">
+        <span class="buddy-launcher-face" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+                <path class="buddy-anubis-ear" d="M13 19 8 3c7 2 12 6 15 13zm22 0 5-16c-7 2-12 6-15 13z" />
+                <path class="buddy-anubis-ear-inner" d="m13 13-2-6 8 7zm22 0 2-6-8 7z" />
+                <path class="buddy-anubis-head" d="M13 15q11-7 22 0l-2 13 5 5-14 11-14-11 5-5z" />
+                <path class="buddy-anubis-muzzle" d="m17 26 7-3 7 3-1 7-6 5-6-5z" />
+                <path class="buddy-anubis-eye" d="m15 20 6-2-1 3-5 1zm18 0-6-2 1 3 5 1z" />
+                <path class="buddy-anubis-nose" d="m21 31 3-2 3 2-3 3z" />
+                <path class="buddy-anubis-mouth" d="M24 34v3m0-1-4 2m4-2 4 2" />
+                <path class="buddy-anubis-collar" d="M12 36q12 8 24 0l3 6q-15 8-30 0z" />
+                <path class="buddy-anubis-collar-line" d="M14 40q10 5 20 0" />
+            </svg>
+        </span>
+        <span>Ask Anubis</span>
+    </button>
+</aside>
+<script>
+    (() => {
+        const questions = [
+            { q: 'How do I make a booking?', a: 'Sign in, open New Booking, complete the required event and venue details, then submit. Your request will appear in My Bookings as Pending.' },
+            { q: 'What does Pending mean?', a: 'Pending means your request is waiting for an administrator to review it. The administrator confirms or declines the booking.' },
+            { q: 'Who confirms my booking?', a: 'An administrator reviews the request and makes the decision. Users can track the status in My Bookings.' },
+            { q: 'What do Approved and Rejected mean?', a: 'Approved means the booking is confirmed. Rejected means it was not approved. You can see status changes in Decision History.' },
+            { q: 'I chose Other. What should I enter?', a: 'Type a short explanation of your event type in the clarification field that appears below Event Type.' },
+            { q: 'Where can I track my request?', a: 'Open My Bookings to see your reservations, their current status, and the decision history.' }
+        ];
+        const panel = document.getElementById('buddy-panel');
+        const launcher = document.getElementById('buddy-launcher');
+        const chat = document.getElementById('buddy-chat');
+        const faqList = document.getElementById('buddy-questions');
+        const askedQuestions = new Set();
+        const repeatedNotices = new Set();
+        const greeting = chat.firstElementChild.cloneNode(true);
+        const addBubble = (text, type) => {
+            const bubble = document.createElement('div');
+            bubble.className = `buddy-bubble ${type}`;
+            bubble.textContent = text;
+            chat.appendChild(bubble);
+            chat.scrollTop = chat.scrollHeight;
+        };
+        questions.forEach(item => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'buddy-question';
+            button.textContent = item.q;
+            button.addEventListener('click', () => {
+                if (askedQuestions.has(item.q)) {
+                    if (!repeatedNotices.has(item.q)) {
+                        repeatedNotices.add(item.q);
+                        addBubble('This has already been answered.', 'buddy-answer');
+                    }
+                    return;
+                }
+                askedQuestions.add(item.q);
+                addBubble(item.q, 'buddy-question-bubble');
+                addBubble(item.a, 'buddy-answer');
+                chat.scrollTop = chat.scrollHeight;
+            });
+            faqList.appendChild(button);
+        });
+        const resetFaq = () => {
+            askedQuestions.clear();
+            repeatedNotices.clear();
+            chat.replaceChildren(greeting.cloneNode(true));
+        };
+        const setOpen = open => {
+            if (!open && !panel.hidden) resetFaq();
+            panel.hidden = !open;
+            launcher.setAttribute('aria-expanded', String(open));
+        };
+        launcher.addEventListener('click', () => setOpen(panel.hidden));
+        document.getElementById('buddy-close').addEventListener('click', () => setOpen(false));
+    })();
+</script>

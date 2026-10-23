@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#14111f">
+    <meta name="theme-color" content="#0c0e17">
     <title>Manage Bookings</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body>
+<body data-theme="amethyst">
 
     <header>
         <div class="header-content">
             <div>
-                <h1>Faculty Booking System</h1>
+                <span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span>
+                <h1>Anubis Core Registry</h1>
                 <p>Review and manage event reservations</p>
             </div>
             <div class="header-label">ADMINISTRATION</div>
+            <%- include('sidebar-toggle-button') %>
         </div>
     </header>
 
     <nav>
         <a href="/">Home</a>
-        <a href="/admin" class="active">Manage Bookings</a>
+        <a href="/admin" class="active">Manage Bookings</a><a href="/admin/calendar">Calendar</a>
         <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button></form>
     </nav>
 
@@ -34,7 +36,7 @@
                 <h2>Booking Management</h2>
                 <p>Review booking requests and manage their current status.</p>
             </div>
-            <a href="/book" class="secondary-button">+ New Booking</a>
+            <a href="/admin/calendar" class="secondary-button">View Calendar</a>
         </section>
 
         <section class="container wide">
@@ -63,6 +65,10 @@
                             placeholder="Search event, venue, department, or organizer..." aria-label="Search bookings">
                     </div>
 
+                    <div class="search-feedback" id="searchFeedback" aria-live="polite">
+                        Showing <strong id="visibleCount"><%= bookings.length %></strong> of <%= bookings.length %> booking(s)
+                    </div>
+
                     <div class="table-container">
                         <table id="bookingTable">
                             <thead>
@@ -80,7 +86,7 @@
 
                             <tbody>
                                 <% bookings.forEach((booking)=> { %>
-                                    <tr>
+                                    <tr data-event-date="<%= booking.event_date %>" data-venue="<%= booking.venue %>" data-event-title="<%= booking.event_title %>" data-status="<%= booking.booking_status %>" data-start-time="<%= booking.start_time %>" data-end-time="<%= booking.end_time %>">
                                         <td data-label="ID">#<%= booking.booking_id %>
                                         </td>
 
@@ -184,8 +190,13 @@
                         </table>
                     </div>
 
-                    <p id="noSearchResults" class="empty hidden">
-                        No bookings match your search.
+                    <div id="noSearchResults" class="empty hidden">
+                        <h3>No matching bookings found</h3>
+                        <p>We couldn’t find any bookings matching your search terms.</p>
+                        <button type="button" class="secondary-button" id="clearSearchBtn">Clear search filter</button>
+                    </div>
+
+
                     </p>
 
                     <script>
@@ -219,10 +230,13 @@
     </main>
 
     <footer>
-        <p>Faculty Booking System &copy; 2026</p>
+        <p>Anubis Core Registry &copy; 2026</p>
         <p>Organized bookings for faculty events</p>
     </footer>
 
+
+
+    <script src="/js/sidebar-toggle.js" defer></script>
 </body>
 
 </html>

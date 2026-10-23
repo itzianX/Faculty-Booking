@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0e17">
+    <title>Availability Calendar | Anubis Core Registry</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body data-theme="amethyst">
+    <header>
+        <div class="header-content">
+            <div><span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span><h1>Anubis Core Registry</h1><p>Review venue availability and scheduled reservations</p></div>
+            <div class="header-label">ADMINISTRATION</div>
+            <%- include('sidebar-toggle-button') %>
+        </div>
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/admin">Manage Bookings</a>
+        <a href="/admin/calendar" class="active" aria-current="page">Calendar</a>
+        <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button></form>
+    </nav>
+    <main class="page-container admin-calendar-page">
+        <section class="welcome-section">
+            <div><h2>Availability Calendar</h2><p>Select a date to review venue schedules, confirmed bookings, and pending requests.</p></div>
+            <a href="/admin" class="secondary-button">Manage Bookings</a>
+        </section>
+        <%- include('admin-calendar') %>
+    </main>
+    <footer><p>Anubis Core Registry &copy; 2026</p><p>Organized bookings for faculty events</p></footer>
+    <script src="/js/sidebar-toggle.js" defer></script>
+</body>
+</html>

@@ -2,24 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#14111f"><title>My Bookings | Faculty Booking</title>
+    <meta name="theme-color" content="#0c0e17"><title>My Bookings | Anubis Core Registry</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <header><div class="header-content"><div><h1>Faculty Booking System</h1><p>Your requests and booking decisions</p></div><div class="header-label">USER PORTAL</div></div></header>
+<body data-theme="amethyst">
+    <header><div class="header-content"><div><span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span><h1>Anubis Core Registry</h1><p>Your requests and booking decisions</p></div><div class="header-label">USER PORTAL</div><%- include('sidebar-toggle-button') %></div></header>
     <nav><a href="/">Home</a><a href="/user" class="active">My Bookings</a><a href="/book">New Booking</a><form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button></form></nav>
     <main class="page-container">
         <section class="welcome-section"><div><h2>Hello, <%= currentUser.full_name %></h2><p>Track confirmations, declines, and pending requests here.</p></div></section>
+        <% if (resubmitError) { %><p class="resubmit-error" role="alert">That date and time still conflict with another booking. Choose a different date, time, or venue and try again.</p><% } %>
+        <section class="container wide notification-section" aria-labelledby="notifications-title">
+            <div class="section-heading"><div><h2 id="notifications-title">Notifications</h2><p>Updates when an administrator confirms or declines a booking.</p></div><span class="booking-count"><%= notifications.length %> update(s)</span></div>
+            <% if (!notifications.length) { %><p class="empty notification-empty">You’re all caught up. Booking decisions will appear here.</p><% } else { %>
+                <div class="notification-list" role="list">
+                    <% notifications.forEach(notification => { %>
+                        <article class="booking-notification notification-<%= notification.notification_type %>" role="listitem">
+                            <span class="notification-mark" aria-hidden="true"><% if (notification.notification_type === 'confirmed') { %><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg><% } else { %><svg viewBox="0 0 20 20"><path d="M10 4v7m0 3v.1"/></svg><% } %></span>
+                            <div class="notification-content"><div class="notification-topline"><strong><%= notification.title %></strong><time><%= notification.created_at %></time></div><p><%= notification.message %></p><a href="#booking-<%= notification.booking_id %>">View booking</a></div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
         <section class="container wide">
-            <div class="section-heading"><div><h2>Your Reservations</h2><p>Requests submitted with <%= currentUser.email %>.</p></div><span class="booking-count"><%= bookings.length %> booking(s)</span></div>
+            <div class="section-heading"><div><h2>Your Reservations</h2><p>Bookings linked to your account.</p></div><span class="booking-count"><%= bookings.length %> booking(s)</span></div>
             <% if (!bookings.length) { %><div class="empty"><h3>No bookings yet</h3><p>Submit a request to see its status and decision history here.</p><a href="/book" class="secondary-button">Create a booking</a></div>
             <% } else { %>
             <div class="table-container"><table><thead><tr><th>Event</th><th>Date &amp; Time</th><th>Venue</th><th>Status</th></tr></thead><tbody>
-                <% bookings.forEach(booking => { %><tr>
+                <% bookings.forEach(booking => { %><tr id="booking-<%= booking.booking_id %>">
                     <td data-label="Event"><strong><%= booking.event_title %></strong><span class="table-subtext"><%= booking.event_type %> · <%= booking.department %></span></td>
                     <td data-label="Date &amp; Time"><strong><%= booking.event_date %></strong><span class="table-subtext"><%= booking.start_time %> - <%= booking.end_time %></span></td>
                     <td data-label="Venue"><%= booking.venue %></td>
-                    <td data-label="Status"><span class="status-badge status-<%= booking.booking_status.toLowerCase() %>"><%= booking.booking_status %></span></td>
+                    <td data-label="Status">
+                        <span class="status-badge status-<%= booking.booking_status.toLowerCase() %>"><%= booking.booking_status %></span>
+                        <% if (booking.booking_status === 'Rejected') { %>
+                            <div class="rejection-note"><strong>Schedule conflict</strong><br><%= booking.rejection_message || 'Please choose an available date, time, or venue, then resubmit your booking.' %></div>
+                            <form action="/bookings/<%= booking.booking_id %>/resubmit" method="POST" class="resubmit-form">
+                                <label>New date<input type="date" name="event_date" value="<%= booking.event_date %>" required></label>
+                                <label>Start time<input type="time" name="start_time" value="<%= booking.start_time %>" step="60" required></label>
+                                <label>End time<input type="time" name="end_time" value="<%= booking.end_time %>" step="60" required></label>
+                                <label>Venue<input type="text" name="venue" value="<%= booking.venue %>" maxlength="150" required></label>
+                                <button type="submit" class="small-button resubmit-button">Update and Resubmit</button>
+                            </form>
+                        <% } %>
+                    </td>
                 </tr><% }); %>
             </tbody></table></div><% } %>
         </section>
@@ -31,6 +57,8 @@
             </tbody></table></div><% } %>
         </section>
     </main>
-    <footer><p>Faculty Booking System &copy; 2026</p><p>Organized bookings for faculty events</p></footer>
+    <footer><p>Anubis Core Registry &copy; 2026</p><p>Organized bookings for faculty events</p></footer>
+    <%- include('help-dog') %>
+    <script src="/js/sidebar-toggle.js" defer></script>
 </body>
 </html>

@@ -4,20 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#14111f">
-    <title>Faculty Booking System</title>
+    <meta name="theme-color" content="#0c0e17">
+    <title>Anubis Core Registry</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body>
+<body data-theme="amethyst">
 
     <header>
         <div class="header-content">
             <div>
-                <h1>Faculty Booking System</h1>
+                <span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span>
+                <h1>Anubis Core Registry</h1>
                 <p>Manage faculty events and venue reservations</p>
             </div>
             <div class="header-label">BOOKING PORTAL</div>
+            <%- include('sidebar-toggle-button') %>
         </div>
     </header>
 
@@ -25,7 +27,7 @@
         <a href="/">Home</a>
         <% if (currentUser) { %>
             <% if (currentUser.role==='admin' ) { %><a href="/admin">Manage Bookings</a>
-                <% } else { %><a href="/user">My Bookings</a>
+                <% } else { %><a href="/user">My Bookings <% if (unreadNotificationCount) { %><span class="notification-unread"><%= unreadNotificationCount %></span><% } %></a>
                     <% } %>
                         <a href="/book" class="active">New Booking</a>
                         <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button>
@@ -42,7 +44,6 @@
                 <h2>Welcome to the Booking Portal</h2>
                 <p>Submit event requests and follow each booking decision.</p>
             </div>
-            <div class="welcome-icon">FB</div>
         </section>
 
         <section class="stats-grid">
@@ -184,15 +185,10 @@
                                     </svg><span class="time-picker-value">Choose a time</span></button>
                                 <div class="custom-picker-popover time-picker-popover" role="dialog"
                                     aria-label="Choose start time" hidden>
-                                    <div class="time-picker-columns">
-                                        <section class="time-column">
-                                            <h4>Hour</h4>
-                                            <div class="time-options time-hour-options"></div>
-                                        </section>
-                                        <section class="time-column">
-                                            <h4>Minute</h4>
-                                            <div class="time-options time-minute-options"></div>
-                                        </section>
+                                    <div class="simple-time-fields">
+                                        <label>Hour<select class="time-hour-select" aria-label="Hour"></select></label>
+                                        <label>Minute<select class="time-minute-select" aria-label="Minute"></select></label>
+                                        <label>AM / PM<select class="time-period-select" aria-label="AM or PM"><option>AM</option><option>PM</option></select></label>
                                     </div>
                                     <button type="button" class="time-picker-apply">Use this time</button>
                                 </div>
@@ -214,15 +210,10 @@
                                     </svg><span class="time-picker-value">Choose a time</span></button>
                                 <div class="custom-picker-popover time-picker-popover" role="dialog"
                                     aria-label="Choose end time" hidden>
-                                    <div class="time-picker-columns">
-                                        <section class="time-column">
-                                            <h4>Hour</h4>
-                                            <div class="time-options time-hour-options"></div>
-                                        </section>
-                                        <section class="time-column">
-                                            <h4>Minute</h4>
-                                            <div class="time-options time-minute-options"></div>
-                                        </section>
+                                    <div class="simple-time-fields">
+                                        <label>Hour<select class="time-hour-select" aria-label="Hour"></select></label>
+                                        <label>Minute<select class="time-minute-select" aria-label="Minute"></select></label>
+                                        <label>AM / PM<select class="time-period-select" aria-label="AM or PM"><option>AM</option><option>PM</option></select></label>
                                     </div>
                                     <button type="button" class="time-picker-apply">Use this time</button>
                                 </div>
@@ -239,13 +230,15 @@
 
                     <div class="form-row">
                         <div>
-                            <label>Organizer Name</label>
-                            <input type="text" value="<%= currentUser.full_name %>" disabled>
+                            <label for="organizer_name">Organizer Name *</label>
+                            <input type="text" id="organizer_name" name="organizer_name"
+                                value="<%= currentUser.full_name %>" maxlength="150" autocomplete="name" required>
                         </div>
 
                         <div>
                             <label for="contact_email">Contact Email *</label>
-                            <input type="email" value="<%= currentUser.email %>" disabled>
+                            <input type="email" id="contact_email" name="contact_email"
+                                value="<%= currentUser.email %>" maxlength="150" autocomplete="email" required>
                         </div>
                     </div>
 
@@ -283,7 +276,7 @@
     </main>
 
     <footer>
-        <p>Faculty Booking System &copy; 2026</p>
+        <p>Anubis Core Registry &copy; 2026</p>
         <p>Organized bookings for faculty events</p>
     </footer>
 
@@ -371,52 +364,42 @@
             const trigger = control.querySelector('.time-picker-trigger');
             const display = control.querySelector('.time-picker-value');
             const popover = control.querySelector('.time-picker-popover');
-            const hourList = control.querySelector('.time-hour-options');
-            const minuteList = control.querySelector('.time-minute-options');
+            const hourSelect = control.querySelector('.time-hour-select');
+            const minuteSelect = control.querySelector('.time-minute-select');
+            const periodSelect = control.querySelector('.time-period-select');
             const error = control.querySelector('.picker-error');
-            let selectedHour = null;
-            let selectedMinute = null;
 
-            const updateDisplay = () => { display.textContent = input.value || 'Choose a time'; };
-            const selectValue = (list, value) => {
-                list.querySelectorAll('button').forEach((button) => {
-                    const selected = button.dataset.value === value;
-                    button.classList.toggle('selected', selected);
-                    button.setAttribute('aria-pressed', String(selected));
+            const updateDisplay = () => {
+                if (!input.value) { display.textContent = 'Choose a time'; return; }
+                const [hour, minute] = input.value.split(':').map(Number);
+                display.textContent = `${String(hour % 12 || 12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
+            };
+            const addSelectOptions = (select, values) => {
+                values.forEach((value) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    select.append(option);
                 });
-                list.dataset.selectedValue = value;
             };
-            const addOptions = (list, count) => {
-                for (let number = 0; number < count; number++) {
-                    const value = padNumber(number);
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'time-option';
-                    button.textContent = value;
-                    button.dataset.value = value;
-                    button.setAttribute('aria-pressed', 'false');
-                    button.addEventListener('click', () => selectValue(list, value));
-                    list.append(button);
-                }
-            };
-            addOptions(hourList, 24);
-            addOptions(minuteList, 60);
+            addSelectOptions(hourSelect, Array.from({ length: 12 }, (_, index) => padNumber(index + 1)));
+            addSelectOptions(minuteSelect, ['00', '15', '30', '45']);
             trigger.addEventListener('click', () => {
                 const opening = popover.hidden;
                 closePickers();
                 if (opening) {
-                    const current = input.value || '09:00';
-                    selectValue(hourList, current.slice(0, 2));
-                    selectValue(minuteList, current.slice(3, 5));
+                    const [currentHour, currentMinute] = (input.value || '09:00').split(':').map(Number);
+                    hourSelect.value = padNumber(currentHour % 12 || 12);
+                    minuteSelect.value = padNumber(Math.floor(currentMinute / 15) * 15);
+                    periodSelect.value = currentHour < 12 ? 'AM' : 'PM';
                     popover.hidden = false;
                     trigger.setAttribute('aria-expanded', 'true');
                 }
             });
             control.querySelector('.time-picker-apply').addEventListener('click', () => {
-                const hour = hourList.dataset.selectedValue;
-                const minute = minuteList.dataset.selectedValue;
-                if (!hour || !minute) return;
-                input.value = `${hour}:${minute}`;
+                let hour = Number(hourSelect.value) % 12;
+                if (periodSelect.value === 'PM') hour += 12;
+                input.value = `${padNumber(hour)}:${minuteSelect.value}`;
                 input.dispatchEvent(new Event('change', { bubbles: true }));
                 error.hidden = true;
                 trigger.removeAttribute('aria-invalid');
@@ -468,6 +451,8 @@
         }
     </script>
 
+    <% if (!currentUser || currentUser.role !== 'admin') { %><%- include('help-dog') %><% } %>
+    <script src="/js/sidebar-toggle.js" defer></script>
 </body>
 
 </html>

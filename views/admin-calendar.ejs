@@ -1,0 +1,143 @@
+<div class="calendar-workspace">
+    <section class="admin-calendar-panel full-calendar-panel" aria-label="Booking availability calendar">
+        <div class="calendar-panel-heading">
+            <div><span class="calendar-eyebrow">SCHEDULE</span>
+                <h2>Availability</h2>
+            </div>
+            <div class="calendar-month-controls"><button type="button" id="calendar-prev"
+                    aria-label="Previous month">‹</button><button type="button" id="calendar-next"
+                    aria-label="Next month">›</button></div>
+        </div>
+        <div class="admin-calendar-month" id="admin-calendar-month" aria-live="polite"></div>
+        <div class="admin-calendar-weekdays" aria-hidden="true">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="admin-calendar-grid" id="admin-calendar-grid" role="grid" aria-label="Booking dates"></div>
+        <div class="calendar-legend"><span><i class="legend-dot confirmed-dot"></i>Confirmed</span><span><i
+                    class="legend-dot pending-dot"></i>Pending</span></div>
+    </section>
+    <aside class="calendar-bookings-panel" aria-label="Bookings on selected date">
+        <div class="calendar-panel-heading">
+            <div><span class="calendar-eyebrow">SELECTED DATE</span>
+                <h2>Bookings &amp; venues</h2>
+            </div>
+        </div>
+        <div class="calendar-day-summary" id="calendar-day-summary" aria-live="polite"></div>
+        <p class="calendar-availability-note">Confirmed reservations block only their listed times. Pending requests are
+            held while under review.</p>
+    </aside>
+</div>
+<div id="calendar-booking-data" hidden>
+    <% bookings.forEach((booking)=> { %>
+        <span data-event-date="<%= booking.event_date %>" data-venue="<%= booking.venue %>"
+            data-event-title="<%= booking.event_title %>" data-status="<%= booking.booking_status %>"
+            data-start-time="<%= booking.start_time %>" data-end-time="<%= booking.end_time %>"></span>
+        <% }); %>
+</div>
+<script>
+    (() => {
+        const calendarGrid = document.getElementById('admin-calendar-grid');
+        const monthLabel = document.getElementById('admin-calendar-month');
+        const summary = document.getElementById('calendar-day-summary');
+        const bookings = [...document.querySelectorAll('#calendar-booking-data span')].map((row) => ({
+            date: row.dataset.eventDate,
+            venue: row.dataset.venue,
+            title: row.dataset.eventTitle,
+            status: row.dataset.status,
+            start: row.dataset.startTime,
+            end: row.dataset.endTime
+        }));
+        const knownVenues = [...new Set(bookings.map((booking) => booking.venue).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+        const today = new Date();
+        let month = new Date(today.getFullYear(), today.getMonth(), 1);
+        let selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const dayKey = (year, monthIndex, day) => `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        function showSelectedDate() {
+            const items = bookings.filter((booking) => booking.date === selectedDate && ['Approved', 'Pending'].includes(booking.status));
+            const date = new Date(`${selectedDate}T00:00:00`);
+            summary.replaceChildren();
+            const heading = document.createElement('h3');
+            heading.textContent = date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            summary.append(heading);
+            if (!items.length) {
+                const empty = document.createElement('p');
+                empty.className = 'calendar-free-note';
+                empty.textContent = 'No pending or confirmed bookings on this date.';
+                summary.append(empty);
+            }
+            const venueHeading = document.createElement('h4');
+            venueHeading.className = 'calendar-venue-heading';
+            venueHeading.textContent = 'Venue availability';
+            summary.append(venueHeading);
+            const list = document.createElement('ul');
+            knownVenues.forEach((venue) => {
+                const venueBookings = items.filter((booking) => booking.venue.toLowerCase() === venue.toLowerCase()).sort((a, b) => a.start.localeCompare(b.start));
+                const item = document.createElement('li');
+                const status = document.createElement('span');
+                const hasConfirmed = venueBookings.some((booking) => booking.status === 'Approved');
+                status.className = `mini-status ${venueBookings.length ? (hasConfirmed ? 'mini-confirmed' : 'mini-pending') : 'mini-available'}`;
+                status.textContent = venueBookings.length ? (hasConfirmed ? 'Scheduled' : 'Pending') : 'Open';
+                const detail = document.createElement('div');
+                const venueName = document.createElement('strong');
+                venueName.textContent = venue;
+                const time = document.createElement('small');
+                time.textContent = venueBookings.length
+                    ? venueBookings.map((booking) => `${booking.start}–${booking.end} · ${booking.title} (${booking.status})`).join(' / ')
+                    : 'No pending or confirmed booking';
+                detail.append(venueName, time);
+                item.append(status, detail);
+                list.append(item);
+            });
+            if (knownVenues.length) summary.append(list);
+            else {
+                const noVenues = document.createElement('p');
+                noVenues.className = 'calendar-free-note';
+                noVenues.textContent = 'No venue names have been recorded yet.';
+                summary.append(noVenues);
+            }
+        }
+
+        function renderCalendar() {
+            const year = month.getFullYear();
+            const monthIndex = month.getMonth();
+            monthLabel.textContent = month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            calendarGrid.replaceChildren();
+            const firstWeekday = new Date(year, monthIndex, 1).getDay();
+            const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+            for (let i = 0; i < firstWeekday; i++) {
+                const spacer = document.createElement('span');
+                spacer.className = 'calendar-day-spacer';
+                spacer.setAttribute('aria-hidden', 'true');
+                calendarGrid.append(spacer);
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const key = dayKey(year, monthIndex, day);
+                const activeBookings = bookings.filter((booking) => booking.date === key && ['Approved', 'Pending'].includes(booking.status));
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'admin-calendar-day';
+                button.textContent = day;
+                button.setAttribute('role', 'gridcell');
+                const hasConfirmed = activeBookings.some((booking) => booking.status === 'Approved');
+                const hasPending = activeBookings.some((booking) => booking.status === 'Pending');
+                if (hasConfirmed) button.classList.add('has-confirmed');
+                if (hasPending) button.classList.add('has-pending');
+                if (key === selectedDate) button.classList.add('selected');
+                if (year === today.getFullYear() && monthIndex === today.getMonth() && day === today.getDate()) button.classList.add('today');
+                const description = activeBookings.length
+                    ? `${activeBookings.length} active booking${activeBookings.length === 1 ? '' : 's'}${hasConfirmed ? ', includes confirmed' : ''}${hasPending ? ', includes pending' : ''}`
+                    : 'No pending or confirmed bookings';
+                button.setAttribute('aria-label', `${month.toLocaleDateString(undefined, { month: 'long' })} ${day}, ${year}: ${description}`);
+                button.setAttribute('aria-selected', String(key === selectedDate));
+                button.addEventListener('click', () => { selectedDate = key; renderCalendar(); showSelectedDate(); });
+                calendarGrid.append(button);
+            }
+        }
+
+        document.getElementById('calendar-prev').addEventListener('click', () => { month.setMonth(month.getMonth() - 1); renderCalendar(); });
+        document.getElementById('calendar-next').addEventListener('click', () => { month.setMonth(month.getMonth() + 1); renderCalendar(); });
+        renderCalendar();
+        showSelectedDate();
+    })();
+</script>

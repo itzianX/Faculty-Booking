@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#342052">
-    <title>Faculty Booking System</title>
+    <meta name="theme-color" content="#0c0e17">
+    <title>Anubis Core Registry</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body>
+<body data-theme="amethyst">
     <header>
         <div class="header-content">
             <div>
-                <h1>Faculty Booking System</h1>
-                <p>A simpler way to request and manage event spaces</p>
+                <span class="header-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 10 6 2l6 5h2l5-5-2 9c1 3 0 6-2 8l-3 3-3-3c-2-2-3-5-1-9z"/><path d="M9 13h2m2 0h2m-4 4 1 1 1-1"/></svg></span>
+                <h1>Anubis Core Registry</h1>
+                <p>The ultimate guardian of your schedule</p>
             </div>
             <div class="header-label">BOOKING WORKSPACE</div>
+            <%- include('sidebar-toggle-button') %>
         </div>
     </header>
     <nav>
         <a href="/" class="active">Home</a>
         <% if (currentUser) { %>
             <% if (currentUser.role==='admin' ) { %><a href="/admin">Manage Bookings</a>
-                <% } else { %><a href="/user">My Bookings</a>
+                <% } else { %><a href="/user">My Bookings <% if (unreadNotificationCount) { %><span class="notification-unread"><%= unreadNotificationCount %></span><% } %></a>
                     <% } %>
                         <a href="/book">New Booking</a>
                         <form action="/logout" method="POST" class="nav-logout"><button type="submit">Sign Out</button>
@@ -34,58 +36,71 @@
     </nav>
     <main class="page-container homepage homepage-simple">
         <section class="simple-hero">
-            <span class="simple-eyebrow">FACULTY EVENT BOOKINGS</span>
-            <h2>Book a space for<br><span>what brings us together.</span></h2>
-            <p>Request a room for your faculty event and follow the decision from your account.</p>
-            <div class="simple-home-actions">
-                <% if (currentUser && currentUser.role==='admin' ) { %>
-                    <a class="simple-primary" href="/admin">Review Bookings</a>
-                    <a class="simple-secondary" href="/book">Request a Space</a>
-                    <% } else if (currentUser) { %>
-                        <a class="simple-primary" href="/book">Request a Space</a>
-                        <a class="simple-secondary" href="/user">My Bookings</a>
-                        <% } else { %>
-                            <a class="simple-primary" href="/signup">Get Started</a>
-                            <a class="simple-secondary" href="/login">Sign In</a>
-                            <% } %>
-            </div>
-            <% if (!currentUser && adminSetupAvailable) { %>
-                <p class="simple-admin-link"><a href="/setup-admin">Set up the first administrator</a></p>
+            <div class="home-hero-copy">
+                <% if (currentUser && currentUser.role === 'admin') { %>
+                    <span class="simple-eyebrow">ADMIN WORKSPACE</span>
+                    <h2>Every event,<br><span>in the right place.</span></h2>
+                    <p>Review requests and check venue availability from one workspace.</p>
+                <% } else if (currentUser) { %>
+                    <span class="simple-eyebrow">WELCOME BACK, <%= currentUser.full_name %></span>
+                    <h2>Find a place for<br><span>your next event.</span></h2>
+                    <p>Choose an event type and date to start a booking request.</p>
+                <% } else { %>
+                    <span class="simple-eyebrow">ANUBIS CORE REGISTRY</span>
+                    <h2>Find a place for<br><span>your next event.</span></h2>
+                    <p>Plan faculty events and keep venue bookings organized in one place.</p>
                 <% } %>
-                    <div class="simple-decoration decoration-one"></div>
-                    <div class="simple-decoration decoration-two"></div>
+                <% if (!currentUser || currentUser.role !== 'admin') { %>
+                    <div class="simple-home-actions">
+                        <% if (currentUser) { %>
+                            <a class="simple-primary" href="/book">Book now</a>
+                            <a class="simple-secondary" href="/user">My Bookings</a>
+                        <% } else { %>
+                            <a class="simple-primary" href="/signup">Book now</a>
+                            <a class="simple-secondary" href="/login">Sign In</a>
+                        <% } %>
+                    </div>
+                <% } else { %>
+                    <div class="simple-home-actions">
+                        <a class="simple-primary" href="/admin">Manage Bookings</a>
+                        <a class="simple-secondary" href="/admin/calendar">View Calendar</a>
+                    </div>
+                <% } %>
+                <% if (!currentUser && adminSetupAvailable) { %>
+                    <p class="simple-admin-link"><a href="/setup-admin">Set up the first administrator</a></p>
+                <% } %>
+            </div>
         </section>
 
-        <section class="simple-steps-section">
-            <div class="simple-section-title"><span>THREE SIMPLE STEPS</span>
-                <h2>From request to decision</h2>
-            </div>
-            <div class="simple-steps">
-                <article><span>01</span>
-                    <div>
-                        <h3>Request</h3>
-                        <p>Choose your event details and submit a booking.</p>
-                    </div>
-                </article>
-                <article><span>02</span>
-                    <div>
-                        <h3>Review</h3>
-                        <p>An admin checks the request and venue availability.</p>
-                    </div>
-                </article>
-                <article><span>03</span>
-                    <div>
-                        <h3>Track</h3>
-                        <p>See confirmation or decline in your booking history.</p>
-                    </div>
-                </article>
-            </div>
-        </section>
+        <% if (currentUser && homeStats) { %>
+            <section class="home-overview" aria-label="Booking overview">
+                <div class="home-overview-heading">
+                    <span><%= currentUser.role === 'admin' ? 'ADMIN OVERVIEW' : 'YOUR OVERVIEW' %></span>
+                    <h2><%= currentUser.role === 'admin' ? 'Bookings at a glance' : 'Your booking summary' %></h2>
+                </div>
+                <div class="home-overview-grid">
+                    <article class="home-stat">
+                        <span class="home-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16M8 14h3"/></svg></span>
+                        <span class="home-stat-value"><%= homeStats.total %></span><span class="home-stat-label">Total bookings</span>
+                    </article>
+                    <article class="home-stat">
+                        <span class="home-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg></span>
+                        <span class="home-stat-value"><%= homeStats.pending %></span><span class="home-stat-label">Awaiting review</span>
+                    </article>
+                    <article class="home-stat">
+                        <span class="home-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
+                        <span class="home-stat-value"><%= homeStats.approved %></span><span class="home-stat-label">Approved</span>
+                    </article>
+                </div>
+            </section>
+        <% } %>
     </main>
     <footer>
-        <p>Faculty Booking System &copy; 2026</p>
+        <p>Anubis Core Registry &copy; 2026</p>
         <p>Organized bookings for faculty events</p>
     </footer>
+    <% if (!currentUser || currentUser.role !== 'admin') { %><%- include('help-dog') %><% } %>
+    <script src="/js/sidebar-toggle.js" defer></script>
 </body>
 
 </html>
