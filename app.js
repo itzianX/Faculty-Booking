@@ -186,8 +186,8 @@ async function ensureSchema() {
         SET n.contact_email = b.owner_email
         WHERE b.owner_email IS NOT NULL AND b.owner_email <> ''`);
 
-    // Local testing convenience: add the documented test admin once, using
-    // the same password hashing as accounts created through the setup page.
+
+
     const testAdmin = await query('SELECT user_id FROM users WHERE email = ? LIMIT 1', [DEFAULT_TEST_ADMIN_EMAIL]);
     if (!testAdmin.length) {
         const passwordHash = await hashPassword('admin123');
@@ -196,7 +196,7 @@ async function ensureSchema() {
         console.log('Created test admin account (username: admin).');
     }
 
-    // Existing bookings are associated with accounts by their contact email.
+
     await query(`INSERT INTO booking_status_history (booking_id, previous_status, new_status, changed_by)
         SELECT b.booking_id, NULL, b.booking_status, b.contact_email
         FROM event_bookings b
@@ -351,7 +351,7 @@ app.get('/user', requireLogin, async (req, res) => {
     }
 });
 
-// Keep old bookmarks and forwarded links from ending at a removed chat page.
+
 app.get('/messages', requireLogin, (req, res) => {
     res.redirect(req.user.role === 'admin' ? '/admin' : '/user');
 });

@@ -1,49 +1,38 @@
-/* ==========================================================================
-   Anubis Core Registry: midnight, plum, sky and sandstone theme
-   1 Tokens · 2 Base · 3 Shell (header, nav, footer) · 4 Layout blocks
-   5 Buttons · 6 Forms · 7 Date/time pickers · 8 Tables & status · 9 Alerts
-   10 Home & auth · 11 Calendar · 12 Booking Buddy · 13 Phone
-   Class names, IDs and data attributes match the EJS views and inline scripts.
-   ========================================================================== */
-
-/* 1. Tokens ---------------------------------------------------------------- */
 :root {
     color-scheme: dark;
     --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    
-    /* Royal Amethyst & Imperial Purple */
+
     --primary: #7b2cbf;
     --primary-dark: #4d1257;
     --primary-light: #9d4edd;
     --primary-soft: rgba(123, 44, 191, 0.16);
 
-    /* Egyptian Radiant Gold & Warm Amber */
     --accent: #f59e0b;
     --accent-hover: #fbbf24;
     --accent-light: #fef08a;
     --accent-soft: rgba(245, 158, 11, 0.12);
 
-    /* Deep Cosmic Obsidian Depths */
+
     --background: #0c0e17;
     --surface: #131726;
     --surface-2: #1b2033;
     --surface-3: #262c46;
     --surface-glass: rgba(19, 23, 38, 0.82);
 
-    /* High-Readability Typography */
+
     --text: #ffffff;
     --text-soft: #f3effc;
     --muted-text: #b6bfd6;
     --muted: var(--muted-text);
     --faint: #7986a4;
 
-    /* Golden Hairline Borders */
+
     --border: rgba(245, 158, 11, 0.16);
     --border-strong: rgba(245, 158, 11, 0.3);
     --border-amethyst: rgba(157, 78, 221, 0.32);
     --focus: var(--accent);
 
-    /* Semantic Status Indicators */
+
     --success: #10b981;
     --approved: #10b981;
     --approved-bg: rgba(16, 185, 129, 0.14);
@@ -62,7 +51,7 @@
     --cancelled: #94a3b8;
     --cancelled-bg: rgba(148, 163, 184, 0.12);
 
-    /* Spacing & Radii */
+
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -72,11 +61,11 @@
     --radius: 16px;
     --radius-lg: 20px;
 
-    /* Clean Matte Shadows (No colored glows) */
+
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.28);
     --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 
-    /* Rich Gradients */
+
     --grad-brand: linear-gradient(135deg, #7b2cbf 0%, #9d4edd 52%, #f59e0b 100%);
     --grad-brand-hover: linear-gradient(135deg, #8b32d8 0%, #ad5df0 52%, #fbbf24 100%);
     --grad-header: linear-gradient(120deg, #0c0e17 0%, #1a142c 50%, #2e123d 100%);
@@ -88,7 +77,7 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* 2. Base ------------------------------------------------------------------ */
+
 *,
 *::before,
 *::after {
@@ -149,7 +138,7 @@ a {
     white-space: nowrap;
 }
 
-/* 3. Shell: header, navigation, footer ------------------------------------- */
+
 header {
     position: relative;
     overflow: hidden;
@@ -350,7 +339,7 @@ footer p+p {
     color: var(--faint);
 }
 
-/* Desktop: header on top, navigation rail on the left, content on the right */
+
 @media (min-width: 901px) {
     body {
         display: grid;
@@ -446,7 +435,7 @@ footer p+p {
     }
 }
 
-/* Tablet: navigation becomes a compact bar under the header */
+
 @media (min-width: 701px) and (max-width: 900px) {
     nav {
         width: calc(100% - 32px);
@@ -476,7 +465,7 @@ footer p+p {
     }
 }
 
-/* 4. Layout blocks --------------------------------------------------------- */
+
 .page-container {
     width: 100%;
     max-width: 1228px;
@@ -643,7 +632,7 @@ footer p+p {
     margin-top: 14px;
 }
 
-/* 5. Buttons --------------------------------------------------------------- */
+
 .submit-button,
 .secondary-button,
 .small-button,
@@ -745,7 +734,7 @@ footer p+p {
     color: #fff;
 }
 
-/* 6. Forms ----------------------------------------------------------------- */
+
 label {
     display: block;
     margin: 12px 0 6px;
@@ -974,7 +963,7 @@ input[type="time"] {
     color: #fef08a;
 }
 
-/* Booking form: label column + field column on desktop */
+
 @media (min-width: 901px) {
     .page-container>.container:not(.wide):not(.auth-prompt):not(.auth-card) {
         max-width: none;
@@ -1035,7 +1024,7 @@ form[action="/register"]>.form-row.compact label {
     font-size: .82rem;
 }
 
-/* 7. Date and time pickers ------------------------------------------------- */
+
 .custom-date-control,
 .custom-time-control {
     position: relative;
@@ -1271,7 +1260,7 @@ form[action="/register"]>.form-row.compact label {
     display: none !important;
 }
 
-/* 8. Tables and status indicators ------------------------------------------ */
+
 .table-container {
     overflow-x: auto;
     background: var(--surface-2);
@@ -1387,7 +1376,7 @@ tbody tr:hover {
     flex: 1;
 }
 
-/* 9. Alerts and inline notices --------------------------------------------- */
+
 .resubmit-error {
     margin: 0 0 14px;
     padding: 12px 14px;
@@ -1543,7 +1532,7 @@ tbody tr:hover {
     min-height: 40px;
 }
 
-/* 10. Home and account pages ----------------------------------------------- */
+
 .homepage-simple {
     max-width: 1260px;
 }
@@ -1778,7 +1767,7 @@ tbody tr:hover {
     margin: 0 7px 8px 0;
 }
 
-/* 11. Availability calendar ------------------------------------------------ */
+
 .calendar-workspace {
     display: grid;
     grid-template-columns: minmax(300px, 370px) minmax(0, 1fr);
@@ -2064,7 +2053,7 @@ tbody tr:hover {
     line-height: 1.45;
 }
 
-/* 12. Booking Buddy -------------------------------------------------------- */
+
 .booking-buddy {
     position: fixed;
     z-index: 1100;
@@ -2283,7 +2272,7 @@ tbody tr:hover {
     font-size: .64rem;
 }
 
-/* 13. Responsive ----------------------------------------------------------- */
+
 @media (max-width: 1050px) {
     .calendar-workspace {
         grid-template-columns: minmax(0, 1fr);
@@ -2308,7 +2297,7 @@ tbody tr:hover {
     }
 }
 
-/* Phone: app-style layout with a fixed bottom navigation bar */
+
 @media (max-width: 700px) {
 
     html,
@@ -2564,7 +2553,7 @@ tbody tr:hover {
         grid-template-columns: 1fr 1fr;
     }
 
-    /* Tables become stacked cards that use each cell's data-label */
+
     .table-container {
         overflow: visible;
         background: transparent;
@@ -2813,7 +2802,7 @@ tbody tr:hover {
     }
 }
 
-/* Phone layout: compact app shell, clear touch targets, and shorter page sections */
+
 @media (max-width: 700px) {
     html {
         scroll-padding-top: 68px;
@@ -3006,7 +2995,7 @@ tbody tr:hover {
         font-size: .93rem;
     }
 
-    form[action="/register"] > label,
+    form[action="/register"]>label,
     form[action="/register"] .form-row label,
     form[action="/register"] .other-event-type-field label {
         margin: 8px 0 5px;
@@ -3142,7 +3131,7 @@ tbody tr:hover {
         color: #d6e3e5;
     }
 
-    .simple-hero > p:not(.simple-admin-link) {
+    .simple-hero>p:not(.simple-admin-link) {
         max-width: 34ch;
         margin-top: 10px;
         font-size: .82rem;
@@ -3193,7 +3182,7 @@ tbody tr:hover {
         border-radius: var(--radius-sm);
     }
 
-    .simple-steps article > span {
+    .simple-steps article>span {
         font-size: .8rem;
     }
 
@@ -3255,7 +3244,7 @@ tbody tr:hover {
     }
 }
 
-/* Home page: replace the generic process steps with a compact booking overview. */
+
 .home-overview {
     margin: 0 0 28px;
     padding: 25px;
@@ -3265,15 +3254,29 @@ tbody tr:hover {
     box-shadow: var(--shadow);
 }
 
-.home-overview-heading { margin-bottom: 16px; }
-.home-overview-heading > span {
+.home-overview-heading {
+    margin-bottom: 16px;
+}
+
+.home-overview-heading>span {
     color: var(--accent);
     font-size: .67rem;
     font-weight: 800;
     letter-spacing: .14em;
 }
-.home-overview-heading h2 { margin-top: 5px; color: var(--text); font-size: 1.2rem; }
-.home-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+.home-overview-heading h2 {
+    margin-top: 5px;
+    color: var(--text);
+    font-size: 1.2rem;
+}
+
+.home-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
 .home-stat {
     min-height: 94px;
     padding: 16px 18px;
@@ -3285,10 +3288,20 @@ tbody tr:hover {
     border: 1px solid rgba(167, 200, 194, .12);
     border-radius: var(--radius);
 }
-.home-stat-value { color: #fff; font-size: 1.7rem; font-weight: 800; line-height: 1; }
-.home-stat-label { color: var(--muted); font-size: .8rem; }
 
-/* Final homepage overrides also take precedence over the phone layout rules above. */
+.home-stat-value {
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.home-stat-label {
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+
 .simple-hero {
     min-height: 230px;
     margin: 4px 0 15px;
@@ -3303,10 +3316,30 @@ tbody tr:hover {
     text-align: left;
     box-shadow: var(--shadow);
 }
-.home-hero-copy { position: relative; z-index: 2; }
-.simple-hero h2 { max-width: 17ch; margin-top: 13px; font-size: clamp(2.2rem, 4vw, 3.35rem); }
-.home-hero-copy > p { max-width: 48ch; margin-top: 12px; color: #dedbd4; font-size: .98rem; }
-.simple-home-actions { justify-content: flex-start; margin-top: 20px; }
+
+.home-hero-copy {
+    position: relative;
+    z-index: 2;
+}
+
+.simple-hero h2 {
+    max-width: 17ch;
+    margin-top: 13px;
+    font-size: clamp(2.2rem, 4vw, 3.35rem);
+}
+
+.home-hero-copy>p {
+    max-width: 48ch;
+    margin-top: 12px;
+    color: #dedbd4;
+    font-size: .98rem;
+}
+
+.simple-home-actions {
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
 .simple-eyebrow {
     padding: 8px 12px;
     background: rgba(13, 18, 22, .58);
@@ -3314,12 +3347,14 @@ tbody tr:hover {
     border-radius: 999px;
     backdrop-filter: none;
 }
+
 .home-visual {
     position: relative;
     min-height: 275px;
     display: grid;
     place-items: center;
 }
+
 .home-photo-orb {
     position: relative;
     z-index: 1;
@@ -3332,6 +3367,7 @@ tbody tr:hover {
     border-radius: 50%;
     box-shadow: var(--shadow);
 }
+
 .home-visual-orbit {
     position: absolute;
     width: min(320px, 94%);
@@ -3340,6 +3376,7 @@ tbody tr:hover {
     border-radius: 50%;
     transform: rotate(-22deg) scaleY(.78);
 }
+
 .home-visual-dot {
     position: absolute;
     z-index: 2;
@@ -3350,16 +3387,34 @@ tbody tr:hover {
     border-radius: 50%;
     box-shadow: var(--shadow);
 }
-.home-visual-dot-one { top: 18%; right: 12%; }
-.home-visual-dot-two { bottom: 15%; left: 12%; width: 12px; height: 12px; }
+
+.home-visual-dot-one {
+    top: 18%;
+    right: 12%;
+}
+
+.home-visual-dot-two {
+    bottom: 15%;
+    left: 12%;
+    width: 12px;
+    height: 12px;
+}
+
 .home-overview {
     margin-bottom: 18px;
     padding: 19px 21px;
     background: var(--surface-2);
     border-color: rgba(167, 200, 194, .2);
 }
-.home-overview-heading { margin-bottom: 12px; }
-.home-overview-heading h2 { font-size: 1.2rem; }
+
+.home-overview-heading {
+    margin-bottom: 12px;
+}
+
+.home-overview-heading h2 {
+    font-size: 1.2rem;
+}
+
 .home-stat {
     position: relative;
     min-height: 86px;
@@ -3374,11 +3429,13 @@ tbody tr:hover {
     background: var(--surface-2);
     transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
+
 .home-stat:hover {
     transform: translateY(-2px);
     border-color: rgba(167, 200, 194, .26);
     background: var(--surface-2);
 }
+
 .home-stat-icon {
     width: 36px;
     height: 36px;
@@ -3390,20 +3447,76 @@ tbody tr:hover {
     border: 1px solid rgba(167, 200, 194, .2);
     border-radius: var(--radius);
 }
-.home-stat-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.home-stat-value { grid-column: 2; grid-row: 1; font-size: 1.7rem; }
-.home-stat-label { grid-column: 1 / -1; font-size: .76rem; }
+
+.home-stat-icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-stat-value {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 1.7rem;
+}
+
+.home-stat-label {
+    grid-column: 1 / -1;
+    font-size: .76rem;
+}
 
 @media (max-width: 700px) {
-    .home-overview { margin: 0 0 14px; padding: 15px 12px; border-radius: var(--radius); }
-    .home-overview-heading { margin-bottom: 12px; }
-    .home-overview-heading h2 { font-size: 1rem; }
-    .home-overview-grid { gap: 7px; }
-    .home-stat { min-height: 78px; padding: 9px 8px; grid-template-columns: 28px 1fr; column-gap: 6px; row-gap: 5px; border-radius: var(--radius-sm); }
-    .home-stat-icon { width: 28px; height: 28px; border-radius: var(--radius-sm); }
-    .home-stat-icon svg { width: 15px; height: 15px; }
-    .home-stat-value { font-size: 1.35rem; }
-    .home-stat-label { font-size: .68rem; line-height: 1.25; }
+    .home-overview {
+        margin: 0 0 14px;
+        padding: 15px 12px;
+        border-radius: var(--radius);
+    }
+
+    .home-overview-heading {
+        margin-bottom: 12px;
+    }
+
+    .home-overview-heading h2 {
+        font-size: 1rem;
+    }
+
+    .home-overview-grid {
+        gap: 7px;
+    }
+
+    .home-stat {
+        min-height: 78px;
+        padding: 9px 8px;
+        grid-template-columns: 28px 1fr;
+        column-gap: 6px;
+        row-gap: 5px;
+        border-radius: var(--radius-sm);
+    }
+
+    .home-stat-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+    }
+
+    .home-stat-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .home-stat-value {
+        font-size: 1.35rem;
+    }
+
+    .home-stat-label {
+        font-size: .68rem;
+        line-height: 1.25;
+    }
+
     .simple-hero {
         min-height: 0;
         margin: 0 0 13px;
@@ -3412,23 +3525,62 @@ tbody tr:hover {
         gap: 2px;
         border-radius: var(--radius);
     }
-    .simple-hero h2 { max-width: 14ch; margin-top: 10px; font-size: clamp(1.65rem, 7vw, 2.1rem); }
-    .home-hero-copy > p { max-width: 29ch; margin-top: 8px; font-size: .8rem; }
-    .simple-home-actions { margin-top: 13px; }
-    .simple-home-actions { justify-content: stretch; }
-    .simple-primary, .simple-secondary { min-width: 0; padding: 9px 10px; font-size: .74rem; }
-    .home-visual { min-height: 145px; }
-    .home-photo-orb { width: min(140px, 100%); border-width: 4px; box-shadow: var(--shadow); }
-    .home-visual-orbit { width: 156px; }
-    .home-visual-dot { width: 12px; height: 12px; border-width: 3px; }
+
+    .simple-hero h2 {
+        max-width: 14ch;
+        margin-top: 10px;
+        font-size: clamp(1.65rem, 7vw, 2.1rem);
+    }
+
+    .home-hero-copy>p {
+        max-width: 29ch;
+        margin-top: 8px;
+        font-size: .8rem;
+    }
+
+    .simple-home-actions {
+        margin-top: 13px;
+    }
+
+    .simple-home-actions {
+        justify-content: stretch;
+    }
+
+    .simple-primary,
+    .simple-secondary {
+        min-width: 0;
+        padding: 9px 10px;
+        font-size: .74rem;
+    }
+
+    .home-visual {
+        min-height: 145px;
+    }
+
+    .home-photo-orb {
+        width: min(140px, 100%);
+        border-width: 4px;
+        box-shadow: var(--shadow);
+    }
+
+    .home-visual-orbit {
+        width: 156px;
+    }
+
+    .home-visual-dot {
+        width: 12px;
+        height: 12px;
+        border-width: 3px;
+    }
 }
 
-/* Home page inspired by the supplied event discovery reference. */
+
 .homepage-simple {
     width: 100%;
     max-width: 1440px;
     padding-top: 22px;
 }
+
 .homepage-simple .simple-hero {
     min-height: clamp(470px, 66vh, 660px);
     margin: 0 0 28px;
@@ -3444,17 +3596,20 @@ tbody tr:hover {
     text-align: center;
     box-shadow: var(--shadow);
 }
+
 .homepage-simple .home-hero-copy {
     width: min(100%, 900px);
     display: flex;
     align-items: center;
     flex-direction: column;
 }
+
 .homepage-simple .simple-eyebrow {
     color: #c3d8dc;
     background: rgba(13, 19, 22, .64);
     border-color: rgba(190, 211, 216, .25);
 }
+
 .homepage-simple .simple-hero h2 {
     max-width: 20ch;
     margin-top: 20px;
@@ -3462,17 +3617,33 @@ tbody tr:hover {
     line-height: 1.03;
     text-wrap: balance;
 }
-.homepage-simple .simple-hero h2 span { color: var(--accent); }
-.homepage-simple .home-hero-copy > p {
+
+.homepage-simple .simple-hero h2 span {
+    color: var(--accent);
+}
+
+.homepage-simple .home-hero-copy>p {
     max-width: 58ch;
     margin-top: 16px;
     color: #e0e5e3;
     font-size: clamp(.95rem, 1.5vw, 1.12rem);
 }
-.homepage-simple .simple-home-actions { margin-top: 27px; justify-content: center; }
-.homepage-simple .simple-primary { min-width: 170px; min-height: 49px; }
+
+.homepage-simple .simple-home-actions {
+    margin-top: 27px;
+    justify-content: center;
+}
+
+.homepage-simple .simple-primary {
+    min-width: 170px;
+    min-height: 49px;
+}
+
 @media (max-width: 700px) {
-    .homepage-simple { padding: 12px 12px 28px; }
+    .homepage-simple {
+        padding: 12px 12px 28px;
+    }
+
     .homepage-simple .simple-hero {
         min-height: 0;
         margin-bottom: 16px;
@@ -3483,22 +3654,38 @@ tbody tr:hover {
         background-size: cover, auto 140%;
         text-align: center;
     }
-    .homepage-simple .home-hero-copy { width: 100%; }
+
+    .homepage-simple .home-hero-copy {
+        width: 100%;
+    }
+
     .homepage-simple .simple-hero h2 {
         max-width: 16ch;
         margin-top: 16px;
         font-size: clamp(2.25rem, 10vw, 3.15rem);
     }
-    .homepage-simple .simple-hero h2 br { display: none; }
-    .homepage-simple .home-hero-copy > p { max-width: 34ch; margin-top: 12px; font-size: .9rem; }
-    .homepage-simple .simple-home-actions { width: min(100%, 370px); margin-top: 20px; }
+
+    .homepage-simple .simple-hero h2 br {
+        display: none;
+    }
+
+    .homepage-simple .home-hero-copy>p {
+        max-width: 34ch;
+        margin-top: 12px;
+        font-size: .9rem;
+    }
+
+    .homepage-simple .simple-home-actions {
+        width: min(100%, 370px);
+        margin-top: 20px;
+    }
 }
 
 /* 14. Upgraded Amethyst & Gold Full System Design Architecture =================
    Cohesive royal amethyst, glowing Egyptian gold, and cosmic obsidian surfaces.
    ========================================================================== */
 
-/* Global Shell & Base Overrides */
+
 html {
     scroll-behavior: smooth;
 }
@@ -3511,7 +3698,7 @@ body {
     letter-spacing: -0.01em;
 }
 
-/* Header & Brand Identity */
+
 header {
     padding: 16px 28px;
     background: var(--grad-header);
@@ -3579,7 +3766,7 @@ header p {
     outline-offset: 2px;
 }
 
-/* Sidebar & Navigation */
+
 @media (min-width: 901px) {
     nav {
         background: linear-gradient(180deg, #111422 0%, #161528 100%);
@@ -3638,7 +3825,7 @@ nav a[aria-current="page"] {
     border: 1px solid rgba(244, 63, 94, 0.38);
 }
 
-/* Page Containers, Welcome Banners, & Content Cards */
+
 .page-container {
     padding-bottom: 56px;
 }
@@ -3694,7 +3881,7 @@ nav a[aria-current="page"] {
     padding: 5px 14px;
 }
 
-/* Modern Dashboard Stat Cards (Matte & Crisp) */
+
 .stats-grid,
 .home-overview-grid {
     gap: 14px;
@@ -3789,14 +3976,14 @@ nav a[aria-current="page"] {
     border-radius: 12px;
 }
 
-.home-overview-heading > span {
+.home-overview-heading>span {
     color: var(--accent);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.15em;
 }
 
-/* Homepage Hero Section */
+
 .homepage-simple .simple-hero {
     min-height: 380px;
     margin: 0 0 28px;
@@ -3804,7 +3991,7 @@ nav a[aria-current="page"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: 
+    background-image:
         linear-gradient(135deg, rgba(12, 14, 23, 0.92) 0%, rgba(45, 17, 60, 0.85) 50%, rgba(19, 23, 38, 0.93) 100%),
         url('/images/anubis-background.jpg');
     background-position: center;
@@ -3842,14 +4029,14 @@ nav a[aria-current="page"] {
     -webkit-text-fill-color: transparent;
 }
 
-.homepage-simple .home-hero-copy > p {
+.homepage-simple .home-hero-copy>p {
     color: var(--muted-text);
     font-size: clamp(0.98rem, 1.5vw, 1.14rem);
     max-width: 54ch;
     margin-top: 14px;
 }
 
-/* Action Buttons & Interactions (Clean Matte) */
+
 .submit-button,
 .simple-primary,
 .small-button,
@@ -3936,7 +4123,7 @@ nav a[aria-current="page"] {
     border-color: #e11d48;
 }
 
-/* Forms, Inputs, & Pickers (No Blur Glow) */
+
 label {
     color: var(--text-soft);
     font-size: 0.88rem;
@@ -3982,7 +4169,7 @@ textarea:focus,
     padding-left: 12px;
 }
 
-/* Availability Calendar */
+
 .calendar-workspace {
     gap: 18px;
 }
@@ -4074,7 +4261,7 @@ textarea:focus,
     border-color: rgba(245, 158, 11, 0.38);
 }
 
-/* Tables, Notifications, & Status Badges (Crisp Matte) */
+
 .table-container {
     background: var(--surface);
     border: 1px solid rgba(245, 158, 11, 0.18);
@@ -4141,7 +4328,7 @@ tbody tr:hover {
     border-radius: 12px;
 }
 
-/* Anubis Booking Buddy & Floating Assistant (Clean Matte) */
+
 .buddy-launcher {
     min-height: 50px;
     padding: 6px 18px 6px 8px;
@@ -4208,7 +4395,7 @@ tbody tr:hover {
     outline: none;
 }
 
-/* Anubis Artwork Specific Coloring */
+
 .buddy-anubis-ear {
     fill: #7b2cbf;
     stroke: #f59e0b;
@@ -4254,16 +4441,40 @@ tbody tr:hover {
     stroke-width: 1.5;
 }
 
-.buddy-face { fill: #fef08a; stroke: #7b2cbf; }
-.buddy-ear { fill: #9d4edd; stroke: #7b2cbf; }
-.buddy-eye, .buddy-nose { fill: #131726; }
-.buddy-muzzle { fill: #ffffff; }
-.buddy-smile { stroke: #7b2cbf; }
+.buddy-face {
+    fill: #fef08a;
+    stroke: #7b2cbf;
+}
 
-/* Responsive adjustments */
+.buddy-ear {
+    fill: #9d4edd;
+    stroke: #7b2cbf;
+}
+
+.buddy-eye,
+.buddy-nose {
+    fill: #131726;
+}
+
+.buddy-muzzle {
+    fill: #ffffff;
+}
+
+.buddy-smile {
+    stroke: #7b2cbf;
+}
+
+
 @media (max-width: 760px) {
-    header { padding: 12px 16px; }
-    .header-label, header p { display: none; }
+    header {
+        padding: 12px 16px;
+    }
+
+    .header-label,
+    header p {
+        display: none;
+    }
+
     nav {
         right: 10px;
         bottom: calc(10px + var(--safe-bottom));
@@ -4274,24 +4485,49 @@ tbody tr:hover {
         border-radius: 14px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
     }
-    nav a, .nav-logout button {
+
+    nav a,
+    .nav-logout button {
         min-width: 0;
         min-height: 44px;
         padding: 8px 10px;
         font-size: 0.78rem;
     }
+
     .homepage-simple .simple-hero {
         min-height: 320px;
         padding: 32px 18px;
     }
-    .homepage-simple .home-hero-copy { width: 100%; }
-    .homepage-simple .simple-hero h2 { max-width: 15ch; font-size: clamp(2rem, 9vw, 3rem); }
-    .homepage-simple .home-hero-copy > p { max-width: 34ch; }
-    .homepage-simple .simple-home-actions { max-width: 360px; }
+
+    .homepage-simple .home-hero-copy {
+        width: 100%;
+    }
+
+    .homepage-simple .simple-hero h2 {
+        max-width: 15ch;
+        font-size: clamp(2rem, 9vw, 3rem);
+    }
+
+    .homepage-simple .home-hero-copy>p {
+        max-width: 34ch;
+    }
+
+    .homepage-simple .simple-home-actions {
+        max-width: 360px;
+    }
 }
 
 @media (max-width: 420px) {
-    .homepage-simple .simple-hero { min-height: 300px; padding: 26px 15px; }
-    .homepage-simple .simple-hero h2 { font-size: clamp(1.9rem, 9vw, 2.4rem); }
-    .buddy-launcher { min-height: 44px; }
+    .homepage-simple .simple-hero {
+        min-height: 300px;
+        padding: 26px 15px;
+    }
+
+    .homepage-simple .simple-hero h2 {
+        font-size: clamp(1.9rem, 9vw, 2.4rem);
+    }
+
+    .buddy-launcher {
+        min-height: 44px;
+    }
 }
