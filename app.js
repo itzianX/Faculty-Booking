@@ -137,6 +137,60 @@ async function verifyPassword(password, stored) {
     return expected.length === derived.length && crypto.timingSafeEqual(expected, derived);
 }
 
+// ---- Password reset helpers ----
+const RESET_TOKEN_MINUTES = 30;
+const RESET_COOLDOWN_SECONDS = 60;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+let nodemailer = null;
+try { nodemailer = require('nodemailer'); } catch { /* optional: run `npm install nodemailer` to send real emails */ }
+let mailTransport = null;
+
+function getMailTransport() {
+    if (mailTransport || !nodemailer || !process.env.SMTP_HOST) return mailTransport;
+    mailTransport = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+    });
+    return mailTransport;
+}
+
+async function sendResetEmail(to, name, link) {
+    const transport = getMailTransport();
+    if (!transport) {
+        if (process.env.NODE_ENV === 'production') {
+            console.error('Password reset requested but SMTP is not configured (set SMTP_HOST, SMTP_USER, SMTP_PASS).');
+        } else {
+            console.log(`[dev] SMTP not configured. Password reset link for ${to}: ${link}`);
+        }
+        return;
+    }
+    await transport.sendMail({
+        from: process.env.MAIL_FROM || process.env.SMTP_USER,
+        to,
+        subject: 'Reset your Anubis Core Registry password',
+        text: `Hello ${name},\n\nUse the link below to choose a new password. It expires in ${RESET_TOKEN_MINUTES} minutes and can only be used once.\n\n${link}\n\nIf you did not request this, you can ignore this email and your password will stay the same.`
+    });
+}
+
+function hashResetToken(token) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+async function findValidReset(token) {
+    if (!/^[a-f0-9]{64}$/.test(String(token || ''))) return null;
+    const rows = await query('SELECT reset_id, user_id FROM password_resets WHERE token_hash = ? AND expires_at > NOW() LIMIT 1',
+        [hashResetToken(token)]);
+    return rows[0] || null;
+}
+
+function validateNewPassword(password, confirm) {
+    if (password.length < 10 || password.length > 200) return 'Use a password between 10 and 200 characters.';
+    if (password !== confirm) return 'The two passwords do not match.';
+    return null;
+}
+
 async function ensureSchema() {
     await query(`CREATE TABLE IF NOT EXISTS users (
         user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -145,6 +199,14 @@ async function ensureSchema() {
         password_hash VARCHAR(200) NOT NULL,
         role VARCHAR(20) NOT NULL DEFAULT 'user',
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await query(`CREATE TABLE IF NOT EXISTS password_resets (
+        reset_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        token_hash CHAR(64) NOT NULL UNIQUE,
+        expires_at DATETIME NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX password_resets_user (user_id)
     )`);
     await query(`CREATE TABLE IF NOT EXISTS booking_status_history (
         history_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -529,3 +591,109 @@ ensureSchema().then(() => {
         console.error('Database setup failed:', err.message);
         process.exitCode = 1;
     });
+
+app.get('/forgot-password', (req, res) => res.render('auth', { mode: 'forgot', error: null, notice: null, sent: false }));
+
+app.post('/forgot-password', async (req, res) => {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const baseUrl = (process.env.APP_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+    res.render('auth', {
+        mode: 'forgot', error: null, sent: true,
+        notice: `If an account exists for that email, a reset link is on its way. It expires in ${RESET_TOKEN_MINUTES} minutes.`
+    });
+    if (!EMAIL_PATTERN.test(email) || email.length > 150) return;
+    try {
+        const users = await query('SELECT user_id, full_name, email FROM users WHERE email = ?', [email]);
+        if (!users.length) return;
+        const user = users[0];
+        const recent = await query('SELECT reset_id FROM password_resets WHERE user_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL ? SECOND) LIMIT 1',
+            [user.user_id, RESET_COOLDOWN_SECONDS]);
+        if (recent.length) return;
+        const token = crypto.randomBytes(32).toString('hex');
+        await query('DELETE FROM password_resets WHERE user_id = ?', [user.user_id]);
+        await query('INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL ? MINUTE))',
+            [user.user_id, hashResetToken(token), RESET_TOKEN_MINUTES]);
+        await sendResetEmail(user.email, user.full_name, `${baseUrl}/reset-password/${token}`);
+    } catch (err) {
+        console.error('Password reset request failed:', err.message);
+    }
+});
+
+app.get('/reset-password/:token', async (req, res) => {
+    try {
+        if (!(await findValidReset(req.params.token))) {
+            return renderError(res, 'This reset link is invalid or has expired. Please request a new one.');
+        }
+        res.render('auth', { mode: 'reset-form', error: null, notice: null, token: req.params.token });
+    } catch (err) {
+        console.error(err);
+        renderError(res, 'Unable to check the reset link. Please try again.', 500);
+    }
+});
+
+app.post('/reset-password/:token', async (req, res) => {
+    const token = req.params.token;
+    try {
+        const reset = await findValidReset(token);
+        if (!reset) return renderError(res, 'This reset link is invalid or has expired. Please request a new one.');
+        const problem = validateNewPassword(req.body.password || '', req.body.confirm_password || '');
+        if (problem) return res.status(400).render('auth', { mode: 'reset-form', error: problem, notice: null, token });
+        const hash = await hashPassword(req.body.password);
+        await query('UPDATE users SET password_hash = ? WHERE user_id = ?', [hash, reset.user_id]);
+        await query('DELETE FROM password_resets WHERE user_id = ?', [reset.user_id]);
+        res.render('auth', { mode: 'login', error: null, notice: 'Your password has been updated. Please sign in with your new password.' });
+    } catch (err) {
+        console.error(err);
+        renderError(res, 'Unable to reset your password. Please try again.', 500);
+    }
+});
+
+app.get('/account/password', requireLogin, (req, res) =>
+    res.render('auth', { mode: 'change-password', error: null, notice: null }));
+
+app.post('/account/password', requireLogin, async (req, res) => {
+    const current = req.body.current_password || '';
+    const next = req.body.password || '';
+    const fail = (message, status = 400) =>
+        res.status(status).render('auth', { mode: 'change-password', error: message, notice: null });
+    try {
+        const rows = await query('SELECT password_hash FROM users WHERE user_id = ?', [req.user.user_id]);
+        if (!rows.length || !(await verifyPassword(current, rows[0].password_hash))) return fail('Your current password is incorrect.', 401);
+        const problem = validateNewPassword(next, req.body.confirm_password || '');
+        if (problem) return fail(problem);
+        if (next === current) return fail('Choose a password different from your current one.');
+        await query('UPDATE users SET password_hash = ? WHERE user_id = ?', [await hashPassword(next), req.user.user_id]);
+        await query('DELETE FROM password_resets WHERE user_id = ?', [req.user.user_id]);
+        res.render('auth', { mode: 'change-password', error: null, notice: 'Your password has been changed.' });
+    } catch (err) {
+        console.error(err);
+        fail('Unable to change your password. Please try again.', 500);
+    }
+});
+
+app.get('/admin/reset-password', requireAdmin, (req, res) =>
+    res.render('auth', { mode: 'reset-password', error: null, notice: null }));
+
+app.post('/admin/reset-password', requireAdmin, async (req, res) => {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
+    if (password.length < 10 || password.length > 200) {
+        return renderError(res, 'Use a password between 10 and 200 characters.');
+    }
+    try {
+        const users = await query('SELECT user_id FROM users WHERE email = ?', [email]);
+        if (!users.length) return renderError(res, 'No account found with that email.', 404);
+        const hash = await hashPassword(password);
+        await query('UPDATE users SET password_hash = ? WHERE user_id = ?', [hash, users[0].user_id]);
+        res.render('auth', {
+            mode: 'reset-password',
+            error: null,
+            notice: `Password updated for ${email}. Give them the temporary password and ask them to sign in.`
+        });
+    } catch (err) {
+        console.error(err);
+        renderError(res, 'Unable to reset the password. Please try again.', 500);
+    }
+});
+
+app.get('/welcome', (req, res) => res.render('welcome'));

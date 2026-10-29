@@ -7,7 +7,8 @@
     <meta name="theme-color" content="#0c0e17">
     <title>
         <%= mode==='signup' ? 'Create Account' : mode==='setup-admin' ? 'Set Up Administrator' : mode==='login'
-            ? 'Sign In' : 'Account' %> | Anubis Core Registry
+            ? 'Sign In' : mode==='forgot' ? 'Forgot Password' : mode==='reset-form' ? 'Choose a New Password'
+            : mode==='change-password' ? 'Change Password' : 'Account' %> | Anubis Core Registry
     </title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -25,7 +26,8 @@
         </div>
     </header>
     <nav><a href="/">Home</a><a href="/login" class="<%= mode === 'login' ? 'active' : '' %>">Sign In</a><a
-            href="/signup" class="<%= mode === 'signup' ? 'active' : '' %>">Create Account</a></nav>
+            href="/signup" class="<%= mode === 'signup' ? 'active' : '' %>">Create Account</a><% if (locals.currentUser) { %><a
+            href="/account/password" class="<%= mode === 'change-password' ? 'active' : '' %>">Change Password</a><% } %></nav>
     <main class="page-container auth-page">
         <section class="container auth-card">
             <% if (mode==='error' ) { %>
@@ -34,7 +36,8 @@
                     <p>
                         <%= error %>
                     </p><a class="secondary-button" href="/login">Sign in</a><a class="secondary-button"
-                        href="/signup">Create account</a>
+                        href="/signup">Create account</a><a class="secondary-button"
+                        href="/forgot-password">Forgot password</a>
                 </div>
                 <% } else if (mode==='signup' ) { %>
                     <div class="section-heading">
@@ -93,6 +96,73 @@
                             </p>
                             <button class="submit-button" type="submit">Create Administrator</button>
                         </form>
+                        <% } else if (mode==='forgot') { %>
+                            <div class="section-heading">
+                                <div>
+                                    <h2>Forgot your password?</h2>
+                                    <p>Enter your account email and we'll send you a link to choose a new password.</p>
+                                </div>
+                            </div>
+                            <% if (locals.notice) { %><p class="form-note" role="status"><%= notice %></p><% } %>
+                            <% if (!locals.sent) { %>
+                            <form action="/forgot-password" method="POST">
+                                <label for="email">Email</label>
+                                <input id="email" name="email" type="email" maxlength="150" autocomplete="email" required>
+                                <button class="submit-button" type="submit">Send Reset Link</button>
+                            </form>
+                            <% } %>
+                            <p class="auth-switch"><a href="/login">Back to sign in</a></p>
+                        <% } else if (mode==='reset-form') { %>
+                            <div class="section-heading">
+                                <div>
+                                    <h2>Choose a new password</h2>
+                                    <p>Enter a new password for your account.</p>
+                                </div>
+                            </div>
+                            <% if (locals.error) { %><p class="form-note" role="alert"><%= error %></p><% } %>
+                            <form action="/reset-password/<%= token %>" method="POST">
+                                <label for="password">New password</label>
+                                <%- include('password-field', { id: 'password', name: 'password', autocomplete: 'new-password', minlength: 10 }) %>
+                                <label for="confirm_password">Confirm new password</label>
+                                <%- include('password-field', { id: 'confirm_password', name: 'confirm_password', autocomplete: 'new-password', minlength: 10 }) %>
+                                <p class="form-note">Use at least 10 characters.</p>
+                                <button class="submit-button" type="submit">Update Password</button>
+                            </form>
+                        <% } else if (mode==='change-password') { %>
+                            <div class="section-heading">
+                                <div>
+                                    <h2>Change your password</h2>
+                                    <p>Enter your current password, then choose a new one.</p>
+                                </div>
+                            </div>
+                            <% if (locals.error) { %><p class="form-note" role="alert"><%= error %></p><% } %>
+                            <% if (locals.notice) { %><p class="form-note" role="status"><%= notice %></p><% } %>
+                            <form action="/account/password" method="POST">
+                                <label for="current_password">Current password</label>
+                                <%- include('password-field', { id: 'current_password', name: 'current_password', autocomplete: 'current-password', minlength: 0 }) %>
+                                <label for="password">New password</label>
+                                <%- include('password-field', { id: 'password', name: 'password', autocomplete: 'new-password', minlength: 10 }) %>
+                                <label for="confirm_password">Confirm new password</label>
+                                <%- include('password-field', { id: 'confirm_password', name: 'confirm_password', autocomplete: 'new-password', minlength: 10 }) %>
+                                <p class="form-note">Use at least 10 characters.</p>
+                                <button class="submit-button" type="submit">Change Password</button>
+                            </form>
+                        <% } else if (mode==='reset-password') { %>
+                            <div class="section-heading">
+                                <div>
+                                    <h2>Reset a user's password</h2>
+                                    <p>Enter the user's email and a temporary password.</p>
+                                </div>
+                            </div>
+                            <% if (locals.notice) { %><p class="form-note"><%= notice %></p><% } %>
+                            <form action="/admin/reset-password" method="POST">
+                                <label for="email">User email</label>
+                                <input id="email" name="email" type="email" maxlength="150" required>
+                                <label for="password">Temporary password</label>
+                                <input id="password" name="password" type="text" minlength="10" maxlength="200" autocomplete="off" required>
+                                <p class="form-note">Use at least 10 characters.</p>
+                                <button class="submit-button" type="submit">Reset Password</button>
+                            </form>
                         <% } else { %>
                             <div class="section-heading">
                                 <div>
@@ -100,6 +170,7 @@
                                     <p>Sign in to submit a booking or check its status.</p>
                                 </div>
                             </div>
+                            <% if (locals.notice) { %><p class="form-note" role="status"><%= notice %></p><% } %>
                             <div class="login-options" role="group" aria-label="Choose account type">
                                 <button type="button" class="login-option selected" data-login-type="user"
                                     aria-pressed="true">
@@ -113,7 +184,6 @@
                                 <input type="hidden" id="login_type" name="login_type" value="user">
                                 <label id="login-identifier-label" for="login-identifier">Email</label><input id="login-identifier" name="identifier" type="text"
                                     autocomplete="username" placeholder="Enter your email" required>
-                                <p class="form-note" id="admin-test-hint" hidden>Testing account: username <strong>admin</strong>, password <strong>admin123</strong>.</p>
                                 <label for="password">Password</label>
                                 <div class="password-field"><input id="password" name="password" type="password"
                                         autocomplete="current-password" required><button class="password-toggle"
@@ -128,7 +198,7 @@
                                         </svg></button></div>
                                 <button class="submit-button" type="submit" id="login-submit">Sign In as User</button>
                             </form>
-                            <p class="auth-switch">New here? <a href="/signup">Create an account</a>.</p>
+                            <p class="auth-switch">New here? <a href="/signup">Create an account</a> &nbsp;|&nbsp; <a href="/forgot-password">Forgot password?</a></p>
                             <% } %>
         </section>
     </main>
@@ -166,7 +236,7 @@
                     submit.textContent = isAdmin ? 'Sign In as Admin' : 'Sign In as User';
                     identifierLabel.textContent = isAdmin ? 'Username or email' : 'Email';
                     identifierInput.placeholder = isAdmin ? 'Enter admin' : 'Enter your email';
-                    adminHint.hidden = !isAdmin;
+                    if (adminHint) adminHint.hidden = !isAdmin;
                 });
             });
         }

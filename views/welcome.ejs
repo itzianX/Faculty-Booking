@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0e17">
+    <title>Welcome | Anubis Core Registry</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body { min-height: 100%; }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 8px;
+            background: radial-gradient(circle at 50% 35%, #1d1840 0%, #0c0e17 65%);
+            font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+            color: #f3e3b3;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .anubis {
+            width: min(70vw, 320px);
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(150, 110, 255, 0.35));
+            animation: bob 3.2s ease-in-out infinite;
+        }
+
+        .ear-l { transform-origin: 105px 100px; animation: twitch 5s ease-in-out infinite; }
+        .eyes { transform-origin: 150px 130px; animation: blink 4.5s infinite; }
+
+        h1 {
+            font-size: clamp(2.2rem, 8vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            background: linear-gradient(180deg, #ffe9a8, #d8a63c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .team {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            width: min(92vw, 560px);
+            margin-top: 28px;
+            list-style: none;
+        }
+
+        .member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 8px 12px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(224, 178, 74, 0.25);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .member:hover { transform: translateY(-4px); border-color: rgba(224, 178, 74, 0.7); }
+
+        .member svg { width: 84px; height: 84px; }
+
+        .member span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #f3e3b3;
+            overflow-wrap: anywhere;
+        }
+
+        .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+        @media (max-width: 480px) {
+            .team { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes twitch { 0%, 90%, 100% { transform: rotate(0); } 94% { transform: rotate(-6deg); } 97% { transform: rotate(2deg); } }
+        @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .anubis, .ear-l, .eyes { animation: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Shared Anubis face (used by every member card). Gem color comes from each member's "color". -->
+    <svg class="sprite" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffe08a" />
+                <stop offset="1" stop-color="#d09a2e" />
+            </linearGradient>
+            <symbol id="anubis-face" viewBox="50 16 200 200">
+                <path d="M84 120 L64 26 Q62 18 70 22 L130 80 Z" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" stroke-linejoin="round" />
+                <path d="M88 102 L76 48 L114 82 Z" fill="url(#gold)" />
+                <path d="M216 120 L236 26 Q238 18 230 22 L170 80 Z" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" stroke-linejoin="round" />
+                <path d="M212 102 L224 48 L186 82 Z" fill="url(#gold)" />
+                <ellipse cx="150" cy="142" rx="84" ry="72" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" />
+                <path d="M70 112 Q150 70 230 112" fill="none" stroke="url(#gold)" stroke-width="9" stroke-linecap="round" />
+                <path d="M150 74 L160 88 L150 102 L140 88 Z" fill="currentColor" stroke="#a97a1f" stroke-width="2" stroke-linejoin="round" />
+                <ellipse cx="150" cy="172" rx="40" ry="28" fill="#3a3158" />
+                <ellipse cx="150" cy="158" rx="12" ry="8.5" fill="#0c0e17" />
+                <ellipse cx="146" cy="155.5" rx="3.5" ry="2" fill="#fff" opacity=".55" />
+                <path d="M150 166 V174 M150 174 Q142 182 134 176 M150 174 Q158 182 166 176" fill="none" stroke="#0c0e17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                <ellipse cx="116" cy="130" rx="18" ry="20" fill="#fff" />
+                <ellipse cx="184" cy="130" rx="18" ry="20" fill="#fff" />
+                <circle cx="119" cy="133" r="12" fill="#0c0e17" />
+                <circle cx="181" cy="133" r="12" fill="#0c0e17" />
+                <circle cx="123" cy="127" r="4.5" fill="#fff" />
+                <circle cx="185" cy="127" r="4.5" fill="#fff" />
+                <circle cx="115" cy="138" r="2" fill="#fff" />
+                <circle cx="177" cy="138" r="2" fill="#fff" />
+                <path d="M94 124 Q92 108 116 108 Q132 108 134 118" fill="none" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+                <path d="M206 124 Q208 108 184 108 Q168 108 166 118" fill="none" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+                <path d="M94 126 L82 134 M206 126 L218 134" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+                <ellipse cx="94" cy="162" rx="12" ry="7" fill="#ff8fb1" opacity=".55" />
+                <ellipse cx="206" cy="162" rx="12" ry="7" fill="#ff8fb1" opacity=".55" />
+            </symbol>
+        </defs>
+    </svg>
+
+    <svg class="anubis" viewBox="0 0 300 300" role="img" aria-label="A cute cartoon Anubis">
+
+        <!-- body -->
+        <path d="M92 300 Q92 214 150 208 Q208 214 208 300 Z" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" stroke-linejoin="round" />
+        <!-- little paws -->
+        <ellipse cx="124" cy="288" rx="16" ry="10" fill="#3a3158" />
+        <ellipse cx="176" cy="288" rx="16" ry="10" fill="#3a3158" />
+
+        <!-- collar -->
+        <path d="M98 222 Q150 262 202 222 L212 242 Q150 290 88 242 Z" fill="url(#gold)" stroke="#a97a1f" stroke-width="2" />
+        <circle cx="150" cy="262" r="6" fill="#4fc3d9" />
+        <circle cx="122" cy="256" r="4" fill="#e85d75" />
+        <circle cx="178" cy="256" r="4" fill="#e85d75" />
+
+        <!-- ears -->
+        <g class="ear-l">
+            <path d="M84 120 L64 26 Q62 18 70 22 L130 80 Z" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" stroke-linejoin="round" />
+            <path d="M88 102 L76 48 L114 82 Z" fill="url(#gold)" />
+        </g>
+        <path d="M216 120 L236 26 Q238 18 230 22 L170 80 Z" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" stroke-linejoin="round" />
+        <path d="M212 102 L224 48 L186 82 Z" fill="url(#gold)" />
+
+        <!-- head -->
+        <ellipse cx="150" cy="142" rx="84" ry="72" fill="#241f3a" stroke="#4b3f7a" stroke-width="4" />
+
+        <!-- gold headband + gem -->
+        <path d="M70 112 Q150 70 230 112" fill="none" stroke="url(#gold)" stroke-width="9" stroke-linecap="round" />
+        <path d="M150 74 L160 88 L150 102 L140 88 Z" fill="#e85d75" stroke="#a97a1f" stroke-width="2" stroke-linejoin="round" />
+
+        <!-- snout -->
+        <ellipse cx="150" cy="172" rx="40" ry="28" fill="#3a3158" />
+        <ellipse cx="150" cy="158" rx="12" ry="8.5" fill="#0c0e17" />
+        <ellipse cx="146" cy="155.5" rx="3.5" ry="2" fill="#fff" opacity=".55" />
+        <path d="M150 166 V174 M150 174 Q142 182 134 176 M150 174 Q158 182 166 176" fill="none" stroke="#0c0e17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- eyes -->
+        <g class="eyes">
+            <ellipse cx="116" cy="130" rx="18" ry="20" fill="#fff" />
+            <ellipse cx="184" cy="130" rx="18" ry="20" fill="#fff" />
+            <circle cx="119" cy="133" r="12" fill="#0c0e17" />
+            <circle cx="181" cy="133" r="12" fill="#0c0e17" />
+            <circle cx="123" cy="127" r="4.5" fill="#fff" />
+            <circle cx="185" cy="127" r="4.5" fill="#fff" />
+            <circle cx="115" cy="138" r="2" fill="#fff" />
+            <circle cx="177" cy="138" r="2" fill="#fff" />
+        </g>
+        <!-- gold eyeliner wings -->
+        <path d="M94 124 Q92 108 116 108 Q132 108 134 118" fill="none" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+        <path d="M206 124 Q208 108 184 108 Q168 108 166 118" fill="none" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+        <path d="M94 126 L82 134 M206 126 L218 134" stroke="#e0b24a" stroke-width="4" stroke-linecap="round" />
+
+        <!-- blush -->
+        <ellipse cx="94" cy="162" rx="12" ry="7" fill="#ff8fb1" opacity=".55" />
+        <ellipse cx="206" cy="162" rx="12" ry="7" fill="#ff8fb1" opacity=".55" />
+    </svg>
+
+    <h1>Welcome</h1>
+
+    <%
+        // EDIT THE NAMES HERE (change "name" anytime; "color" is the gem on each face)
+        const members = [
+            { name: 'PET, Ceazar Ian.', color: '#e85d75' },
+            { name: 'JAGORIN, Rainer Ranviel', color: '#4fc3d9' },
+            { name: 'IWAG, Nico', color: '#9b7bff' },
+            { name: 'VALDE, Zeth Daniel', color: '#5fd38d' },
+            { name: 'GARGOLES, Diana Me', color: '#ff9f5a' },
+            { name: 'BONITE, Franzelle', color: '#ff8fb1' }
+        ];
+    %>
+    <ul class="team">
+        <% members.forEach((m) => { %>
+            <li class="member" style="color: <%= m.color %>">
+                <svg viewBox="0 0 200 200" role="img" aria-label="<%= m.name %>"><use href="#anubis-face" /></svg>
+                <span><%= m.name %></span>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+
+</html>
